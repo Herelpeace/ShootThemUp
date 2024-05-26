@@ -1,0 +1,227 @@
+// My Shoot Them Up Game , All Rights Reserved
+// STUBaseWeapon.cpp
+
+
+#include "Weapon/STUBaseWeapon.h"
+#include "Components/SkeletalMeshComponent.h"    // для добавления Mesh
+#include "Engine/World.h"                        // 
+#include "DrawDebugHelpers.h"                    // дли рисования линий (Line Trace)
+#include "GameFramework/Character.h"             // класс Charactera
+#include "GameFramework/Controller.h"            // класс Controllera чтобы через него получить доступ к камере
+
+
+DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All);
+
+
+ASTUBaseWeapon::ASTUBaseWeapon()
+{
+	PrimaryActorTick.bCanEverTick = false;
+
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
+	SetRootComponent(WeaponMesh);    // делаем компонет корневым
+}
+
+
+void ASTUBaseWeapon::BeginPlay()
+{
+	Super::BeginPlay();	
+
+	check(WeaponMesh);  // проверяем Mash оружия, если его нет, то ничего не отрисовываем
+}
+
+// функция бинда кнопки мышки, вызывается из Charactera
+void ASTUBaseWeapon::Fire() 
+{
+	UE_LOG(LogBaseWeapon, Warning, TEXT(" Fire!!! "));
+
+	MakeShot();
+}
+
+
+// функция содержит всю логику выстрела
+void ASTUBaseWeapon::MakeShot() 
+{
+	// проверка мира на null
+	if (!GetWorld()) return;
+
+	FVector TraceStart,TraceEnd;
+	// начальная и конечная точки выстрела
+
+	if (!GetTraceData(TraceStart, TraceEnd)) return;
+
+
+	FHitResult HitResult;
+	// структура в которую сохраняем информацию о пересечении LineTrace с объектами
+	// структура FHitResult содержит поля: время пересечения, точка пересечения, нормаль, указатель на актор с которым
+	// пересеклись и т.д. так же FHitResult содержит информацию было пересечение или нет, переменная bBlockingHit
+
+	// заполняем структуру HitResult
+	MakeHit(HitResult, TraceStart, TraceEnd);
+
+
+	// если пересечение было, попали в какой либо актор
+	if (HitResult.bBlockingHit)
+	{
+		// функция нанесения урона актору
+		MakeDamage(HitResult);
+
+
+	    // функция отрисовки линии,пердаем коодинаты в виде переменных (без нашей функции, рефакторинга)
+	    //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 3.0f, 0, 3.0f);
+
+		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Green, false, 3.0f, 0, 3.0f);
+
+	    // GetWorld()    - указатель на мир
+	    // TraceStart    - координаты откуда начинается линия
+	    // TraceEnd      - конечная точка
+	    // FColor::Green - цвет линии
+	    // false         - линия не остается навсегда, исчезает через какое то время
+	    // 3.0f          - время отображения линии до исчезновения
+	    // 0             - порядок отрисовки глубины
+	    // 3.0f          - толщина линии
+
+		// SocketTransform.GetLocation() - координаты откуда начинается линия
+		// HitResult.ImpactPoint         - конечная точка
+		
+
+		// рисуем сферу в месте пересечения
+	    DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24.0f, FColor::Green, false, 5.0f);
+
+		// GetWorld()            - указатель на мир
+		// HitResult.ImpactPoint - центр сферы, координаты в которых рисуем сферу, берем координаты точки пересечения
+		// 10.0f                 - радиус сферы
+		// 24.0f                 - количество сегментов
+		// FColor::Green         - цвет сферы
+		// false                 - ?
+		// 5.0f                  - время отображения сферы секунд
+
+		UE_LOG(LogBaseWeapon, Warning, TEXT(" Bone: %s "), *HitResult.BoneName.ToString() );
+	}
+	else
+	{
+		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Green, false, 3.0f, 0, 3.0f);
+		// если никуда не попали то конечную точку рисуем в TraceEnd
+	}
+
+}
+
+
+// функця возвращает указатель на контроллер текущего актора
+APlayerController* ASTUBaseWeapon::GetPlayerController() const
+{
+	const auto Player = Cast<ACharacter>(GetOwner());
+	// получаем указатель на владельца компонента STUBaseWeapon, приводим его к типу ACharacter, записываем в
+	// переменную
+
+	if (!Player) return nullptr;
+
+	return Player->GetController<APlayerController>();
+	// из указателя на владельца получаем указатель на Controller
+}
+
+// получаем Координаты и вращение камеры
+bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
+{
+	const auto Controller = GetPlayerController();
+
+	if (!Controller)  return false;
+
+	//FVector ViewLocation;  // для сохранения координат
+	//FRotator ViewRotation; // для сохранения вращения
+
+	Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+	// заполняем переменные ViewLocation, ViewRotation данными
+	// из указателя на Controller получаем позицию камеры
+	// указатель на камеру Charactera ViewLocation - коорддинаты камеры, ViewRotation- вращение камеры
+	return true;
+}
+
+
+// функция возвращает положение сокета
+FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
+{
+	return WeaponMesh->GetSocketLocation(MuzzleSocketName);
+}
+
+// заполняем начальные и конечные координаты для рисуемой линии
+bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
+{
+	FVector ViewLocation;  // для сохранения координат
+	FRotator ViewRotation; // для сохранения вращения
+
+	if(!GetPlayerViewPoint(ViewLocation, ViewRotation)) return false;
+
+
+	// получем трансфорамцию сокета
+	// const FTransform SocketTransform = WeaponMesh->GetSocketTransform(MuzzleSocketName);
+
+	// GetSocketTransform - получает Transform сокета, принимает 2 параметра
+	// MuzzleSocketName   - имя сокета
+	// TypeCoordinate     - тип координат в которой хотим получить сокет. Параметр
+	// не указан значит получаем координаты в мировой системе координат
+
+	// точка начала выстрела, записываем в нее положение сокета
+	// точка начала выстрела, записываем в нее положение камеры
+	TraceStart = ViewLocation; // SocketTransform.GetLocation();
+
+	// вектор направления выстрела (единичный)
+	const FVector ShootDirection = ViewRotation.Vector(); //	SocketTransform.GetRotation().GetForwardVector();
+
+	// SocketTransform.GetRotation() - получаем кватернион наших векторов
+	// GetForwardVector()            - возвращает Forward вектор кватерниона (вектор поворота по оси Х)
+	// ViewRotation.Vector()         - возвращает Forward вектор
+
+	// конечная точка выстрела
+	TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
+
+	// к точке старта прибавляем единичный вектор направления умноженный на какое то число, которое задаст длинну
+	// вектора
+
+	return true;
+
+}
+
+
+// получаем данные о пересечении (столкновении)
+void ASTUBaseWeapon::MakeHit( FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd) 
+{
+	if (!GetWorld()) return;
+
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(GetOwner()); // заполняем поле AddIgnoredActor()
+
+	// FCollisionQueryParams - структура в которой можно указать игнорируемые компоненты или акторы
+	// AddIgnoredActor()     - актор которого нужно игнорировать, нужно чтобы игрок не попадал сам в себя при стрельбе
+
+
+	GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+
+	// LineTraceSingleByChannel()		 - вернет информацию о пересечении с
+	// первым объектом
+	// HitResult
+	// - структура которая содержит информацию о пересечении TraceStart
+	// - координаты начала линии TraceEnd
+	// - координаты конца линии ECollisionChannel::ECC_Visibility - отфильтровывает объекты на сцене, работает только
+	// с объектами которые блокируют данный канал
+	//                                     остальные объекты будут игнорироваться
+	// функция так же возвращает true если пересечение было или false если небыло
+	// CollisionParams                   - игнорируемые акторы. (передаем текущий актор, не будем попадать сами в
+	// себя)
+}
+
+
+void  ASTUBaseWeapon::MakeDamage(FHitResult& HitResult)
+{
+	// получаем указатель на актора в которого попал LineTrace
+	const auto DamageActor = HitResult.GetActor();
+
+	if (!DamageActor) return;
+
+	DamageActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
+
+	// DamageAmount          - количество Damage
+	// FDamageEvent()        - тип Damage
+	// GetPlayerController() - указатель на контроллер который нанес урон
+	// this                  - указатель на актор который нанес урон, текущее оружие this
+}
+

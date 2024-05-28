@@ -1,5 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
-// STUBaseCharacter.h
+// Â STUBaseCharacter.h
 
 #pragma once
 

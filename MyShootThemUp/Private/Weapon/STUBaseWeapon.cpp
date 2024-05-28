@@ -1,5 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
-// STUBaseWeapon.cpp
+// В STUBaseWeapon.cpp
 
 
 #include "Weapon/STUBaseWeapon.h"
@@ -29,13 +29,37 @@ void ASTUBaseWeapon::BeginPlay()
 	check(WeaponMesh);  // проверяем Mash оружия, если его нет, то ничего не отрисовываем
 }
 
-// функция бинда кнопки мышки, вызывается из Charactera
-void ASTUBaseWeapon::Fire() 
+// функция бинда кнопки мышки, вызывается из Charactera до тех пор пока кнопка мышки не отпущена
+// начало стрельбы
+void ASTUBaseWeapon::StartFire() 
 {
-	UE_LOG(LogBaseWeapon, Warning, TEXT(" Fire!!! "));
+	UE_LOG(LogBaseWeapon, Warning, TEXT(" StartFire!!! "));
 
+	// функция производит выстрел
 	MakeShot();
+
+	// запуск таймера
+	GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTUBaseWeapon::MakeShot, TimeBetweenShots, true );
+
+	// ShotTimerHandle           - имя создаваемого таймера
+	// this                      - указатель на объект
+	// &ASTUBaseWeapon::MakeShot - функция которая будет вызываться
+	// TimeBetweenShots          - время между вызовами функции ( float переменная,скорость стрельбы)
+	// true                      - цикличная работа таймера ( false - единорозовый вызов )
+
 }
+
+
+// функция бинда кнопки мышки, вызывается из Charactera, вызывается после того как отпустили кнопку мышки
+// конец стрельбы
+void ASTUBaseWeapon::StopFire()
+{
+	UE_LOG(LogBaseWeapon, Warning, TEXT(" StopFire!!! "));
+	
+	// остановка таймера
+	GetWorldTimerManager().ClearTimer(ShotTimerHandle);
+}
+
 
 
 // функция содержит всю логику выстрела
@@ -164,12 +188,18 @@ bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
 	// точка начала выстрела, записываем в нее положение камеры
 	TraceStart = ViewLocation; // SocketTransform.GetLocation();
 
+	// переводим угол разброса в радианы
+	const auto HalfRad = FMath::DegreesToRadians(BulletSpread);
+
 	// вектор направления выстрела (единичный)
-	const FVector ShootDirection = ViewRotation.Vector(); //	SocketTransform.GetRotation().GetForwardVector();
+	const FVector ShootDirection = FMath::VRandCone( ViewRotation.Vector(), HalfRad); //	SocketTransform.GetRotation().GetForwardVector();
 
 	// SocketTransform.GetRotation() - получаем кватернион наших векторов
 	// GetForwardVector()            - возвращает Forward вектор кватерниона (вектор поворота по оси Х)
 	// ViewRotation.Vector()         - возвращает Forward вектор
+	// FMath::VRandCone()            - получаем случайный вектор в коническом пространстве
+	// ViewRotation.Vector()         - направление в котором получаем разброс
+	// HalfRad                       - половина угла расхождения конуса ( в радианах)
 
 	// конечная точка выстрела
 	TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
@@ -210,6 +240,7 @@ void ASTUBaseWeapon::MakeHit( FHitResult& HitResult, const FVector& TraceStart, 
 }
 
 
+// Через HitResult выходим на актора и вызвываем у него TakeDamage
 void  ASTUBaseWeapon::MakeDamage(FHitResult& HitResult)
 {
 	// получаем указатель на актора в которого попал LineTrace

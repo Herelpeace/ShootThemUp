@@ -1,5 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
-// STUBaseWeapon.h
+// ¬ STUBaseWeapon.h
 
 #pragma once
 
@@ -20,7 +20,8 @@ public:
 	ASTUBaseWeapon();
 
 	// делаем виртуальной т.к. дл€ разных оружий (наследников) будем переопредел€ть свою функцию 
-	virtual	void Fire(); // стрельба из оружи€ 
+	virtual	void StartFire(); // старт стрельба из оружи€ 
+	virtual	void StopFire();  // стоп стрельба из оружи€ 
 
 protected:
 
@@ -30,11 +31,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
     FName MuzzleSocketName = "MuzzleSocket";   // им€ сокета
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     float TraceMaxDistance = 1500.0f; // рассто€ние выстрела 1500 см = 15м
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float DamageAmount = 10.0f;       // Damage наносимый актору
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float TimeBetweenShots = 0.1f;    // врем€ между выстрелами
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float BulletSpread = 1.5f;        // половина угла конуса разброса при выстрелах (полный угол = умножить на 2)
 
 	void MakeShot();
 
@@ -57,5 +64,11 @@ protected:
 
 	// нанесение урона Damage, актору
 	void MakeDamage(FHitResult& HitResult);
+
+
+private:
+
+	// переменна€ дл€ таймера
+	FTimerHandle ShotTimerHandle;
 
 };

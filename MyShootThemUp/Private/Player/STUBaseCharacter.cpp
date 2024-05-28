@@ -1,5 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
-// STUBaseCharacter.cpp
+// В STUBaseCharacter.cpp
 
 
 #include "Player/STUBaseCharacter.h"
@@ -128,7 +128,8 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	// this       - объект к которому применяем
 	// &ASTUBaseCharacter::Jump - функция которая будет вызвана при нажатии клавиши (уже реализована в классе Pawn)
 
-	PlayerInputComponent->BindAction("Fire",IE_Pressed,WeaponComponent, &USTUWeaponComponent::Fire);
+	PlayerInputComponent->BindAction("Fire",IE_Pressed,WeaponComponent, &USTUWeaponComponent::StartFire); // бинд функций стрельбы мышкой
+	PlayerInputComponent->BindAction("Fire",IE_Released,WeaponComponent, &USTUWeaponComponent::StopFire);
 
 }
 

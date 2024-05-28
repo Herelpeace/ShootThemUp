@@ -1,5 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
-// STUWeaponComponent.h
+// В STUWeaponComponent.h
 
 #pragma once
 
@@ -18,7 +18,8 @@ class MYSHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent
 public:	
 	USTUWeaponComponent();
 
-    void Fire(); // стрельба мышкой 
+    void StartFire(); // старт стрельба мышкой 
+    void StopFire();  // стоп стрельба мышкой 
 
 protected:
 	virtual void BeginPlay() override;

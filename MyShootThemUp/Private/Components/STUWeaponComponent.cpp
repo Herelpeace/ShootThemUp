@@ -1,5 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
-// STUWeaponComponent.cpp
+// В STUWeaponComponent.cpp
 
 
 #include "Components/STUWeaponComponent.h"
@@ -69,11 +69,23 @@ void USTUWeaponComponent::SpawnWeapon()
 }
 
 
-void USTUWeaponComponent::Fire()
+// старт стрельбы
+void USTUWeaponComponent::StartFire()
 {
 	if (!CurrentWeapon) return;
 
-	// из класса STUBaseWeapon.h вызыавем функциб Fire
-	CurrentWeapon->Fire();
+	// из класса STUBaseWeapon.h вызыавем функциб StartFire
+	CurrentWeapon->StartFire();
 }
-// Fire()
+// StartFire()
+
+
+// стоп стрельбы
+void USTUWeaponComponent::StopFire()
+{
+	if (!CurrentWeapon) return;
+
+	// из класса STUBaseWeapon.h вызыавем функциб StopFire
+	CurrentWeapon->StopFire();
+}
+// StopFire()

@@ -55,7 +55,6 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 	HealthTextComponent->SetupAttachment(GetRootComponent());                                  // закрепл€ем к корневому компоненту
 	HealthTextComponent->SetOwnerNoSee(true);                                                  // не отрисоываем данный компонет над персонажем когда мы им управл€ем
 
-
 	WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");   // создаем раздел в котором выбираем наши классы оружи€
                                                                                  
 } 

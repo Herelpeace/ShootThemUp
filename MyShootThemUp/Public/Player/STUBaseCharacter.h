@@ -49,7 +49,7 @@ protected:
 	USTUWeaponComponent* WeaponComponent;                                      // создали объект нашего класса оружия
 
 	UPROPERTY(EditDefaultsOnly, CAtegory = "Animation")        // доступен только в дефолтных настройках
-	UAnimMontage* DeathAnimMontage;                            // переменная для AnimMontage
+	UAnimMontage* DeathAnimMontage;                            // переменная для AnimMontage, анимация вверх вниз
 
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")  

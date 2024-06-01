@@ -37,13 +37,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	float DamageAmount = 10.0f;       // Damage наносимый актору
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float TimeBetweenShots = 0.1f;    // время между выстрелами
+	virtual void MakeShot();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float BulletSpread = 1.5f;        // половина угла конуса разброса при выстрелах (полный угол = умножить на 2)
-
-	void MakeShot();
+	// заполняем начальные и конечные координаты для рисуемой линии
+	virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
 
 	virtual void BeginPlay() override;
 
@@ -56,9 +53,6 @@ protected:
 	// функция возвращает положение сокета
 	FVector GetMuzzleWorldLocation() const;
 
-	// заполняем начальные и конечные координаты для рисуемой линии
-	bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
-
 	// получаем данные о пересечении (столкновении)
 	void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd); 
 
@@ -66,9 +60,6 @@ protected:
 	void MakeDamage(FHitResult& HitResult);
 
 
-private:
 
-	// переменная для таймера
-	FTimerHandle ShotTimerHandle;
 
 };

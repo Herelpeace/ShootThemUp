@@ -48,7 +48,6 @@ void ASTURifleWeapon::MakeShot()
 
 	if (!GetTraceData(TraceStart, TraceEnd)) return;
 
-
 	FHitResult HitResult;
 	// структура в которую сохраняем информацию о пересечении LineTrace с объектами
 	// структура FHitResult содержит поля: время пересечения, точка пересечения, нормаль, указатель на актор с которым
@@ -108,8 +107,8 @@ void ASTURifleWeapon::MakeShot()
 // заполняем начальные и конечные координаты для рисуемой линии
 bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
 {
-	FVector ViewLocation;  // для сохранения координат
-	FRotator ViewRotation; // для сохранения вращения
+	FVector  ViewLocation;  // для сохранения координат
+	FRotator ViewRotation;  // для сохранения вращения
 
 	if (!GetPlayerViewPoint(ViewLocation, ViewRotation)) return false;
 

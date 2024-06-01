@@ -4,7 +4,6 @@
 
 #include "Weapon/STULauncherWeapon.h"
 #include "Weapon/STUProjectile.h"
-#include "Kismet/GameplayStatics.h"  // для спавна ракеты
 
 void ASTULauncherWeapon::StartFire()
 {
@@ -15,23 +14,49 @@ void ASTULauncherWeapon::StartFire()
 
 void ASTULauncherWeapon::MakeShot()
 {
+	// проверка мира на null
+	if (!GetWorld()) return;
+
+	FVector TraceStart, TraceEnd;
+	// начальная и конечная точки выстрела
+
+	if (!GetTraceData(TraceStart, TraceEnd)) return;
+
+	FHitResult HitResult;
+	// структура в которую сохраняем информацию о пересечении LineTrace с объектами
+	// структура FHitResult содержит поля: время пересечения, точка пересечения, нормаль, указатель на актор с которым
+	// пересеклись и т.д. так же FHitResult содержит информацию было пересечение или нет, переменная bBlockingHit
+
+	// заполняем структуру HitResult
+	MakeHit(HitResult, TraceStart, TraceEnd);
+
+	// определяем координаты конечной точки в которой должна оказаться ракетв
+	const FVector EndPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : TraceEnd;
+	// если пересечение было то EndPoint = координаты точки пересечения, иначе координаты TraceEnd
+	// bBlockingHit - поле структуры HitResult, принимает true если было пересечение вектора с каким либо объектом
+	// ImpactPoint  - поле структуры HitResult, возвращает координаты точки пересечения объектов
+
+	// определяем вектор напрвления, для этого из конечной точки вычитаем начальную
+	const FVector Direction = (EndPoint - GetMuzzleWorldLocation()).GetSafeNormal();
+    // нам нужно только нарправление, поэтому сделаем вектор единичным при помощи функции GetSafeNormal()
+
+
 	// задаем первоначальный трансформ ракеты, в переменную SpawnTransform 
 	const FTransform SpawnTransform(FRotator::ZeroRotator, GetMuzzleWorldLocation());
 	// FRotator::ZeroRotator    - вращение, нулевое
 	// GetMuzzleWorldLocation() - функция в базовом классе,возвращает FVector координаты положения MuzzleSocket
 	//                            т.е. координаты спавна ракеты совпадают с координами MuzzleSocket
 
-	// указатель на actor ракеты, спавн ракеты
-	auto Projectile = UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), ProjectileClass, SpawnTransform);
-	// UGameplayStatics::BeginDeferredActorSpawnFromClass - спавн ракеты, функция вызывается до вызова BeginPlay, что позволяет настроить класс перед запуском
-	// GetWorld()      - уакзатель на мир
-	// ProjectileClass - переменная класса ASTUProjectile, класс который спавним
-	// SpawnTransform  - трансформация спавна
+	// спавн ракеты через GetWorld, вернет указатель на класс соспавненного объекта
+	ASTUProjectile* Projectile = GetWorld()->SpawnActorDeferred<ASTUProjectile>(ProjectileClass, SpawnTransform);
+	// TSubclassOf<ASTUProjectile> ProjectileClass - класс ракеты который будем спавнить при выстреле Launchera
+	if (Projectile)
+	{
+		// передаем вектор направления (Direction), соспавненному актору ракеты
+		Projectile->SetShootDirection(Direction);
 
-	// дополнительные параметры спанв ракеты, запишем в следующем уроке
+		// заершаем спавн
+		Projectile->FinishSpawning(SpawnTransform);
+	}
 
-	// необходмо завершить спавн чтобы после него была вызвана функция BeginPlay
-	UGameplayStatics::FinishSpawningActor(Projectile, SpawnTransform);
-	// Projectile      - наш соспавненный актор
-	// SpawnTransform  - трансформация спавна
 }

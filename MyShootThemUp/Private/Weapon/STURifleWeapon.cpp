@@ -147,3 +147,20 @@ bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
 	return true;
 
 }
+
+
+// Через HitResult выходим на актора и вызвываем у него TakeDamage
+void  ASTURifleWeapon::MakeDamage(FHitResult& HitResult)
+{
+	// получаем указатель на актора в которого попал LineTrace
+	const auto DamageActor = HitResult.GetActor();
+
+	if (!DamageActor) return;
+
+	DamageActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
+
+	// DamageAmount          - количество Damage
+	// FDamageEvent()        - тип Damage
+	// GetPlayerController() - указатель на контроллер который нанес урон
+	// this                  - указатель на актор который нанес урон, текущее оружие this
+}

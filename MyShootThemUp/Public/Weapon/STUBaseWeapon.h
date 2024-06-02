@@ -28,14 +28,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
     USkeletalMeshComponent* WeaponMesh;        // переменная для Mesh оружия
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite);
     FName MuzzleSocketName = "MuzzleSocket";   // имя сокета
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     float TraceMaxDistance = 1500.0f; // расстояние выстрела 1500 см = 15м
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float DamageAmount = 10.0f;       // Damage наносимый актору
+
 
 	virtual void MakeShot();
 
@@ -55,11 +54,5 @@ protected:
 
 	// получаем данные о пересечении (столкновении)
 	void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd); 
-
-	// нанесение урона Damage, актору
-	void MakeDamage(FHitResult& HitResult);
-
-
-
 
 };

@@ -8,7 +8,7 @@
 #include "STUProjectile.generated.h"
 
 class USphereComponent;    // forward declaration
-class UProjectileMovementComponent;
+class UProjectileMovementComponent; // forward declaration
 
 UCLASS()
 class MYSHOOTTHEMUP_API ASTUProjectile : public AActor
@@ -22,15 +22,31 @@ public:
 	void SetShootDirection(const FVector& Direction) { ShotDirection = Direction; }
 
 protected:
-	UPROPERTY(VisibleDefaultsOnly, Category = "Weapon")
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	USphereComponent* CollisionComponent;               // создаем класс сферы, который используем в качестве мэша для ракеты
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Weapon")
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	UProjectileMovementComponent* MovementComponent;
 	// UProjectileMovementComponent - компонент изменяет положение актора на тик, в зависимости от заданных параметров.(придает скорость)
 	// схож с CharacterMovementComponent
 	// можно сделать самонаводящийся актор
 	// сделать разное количество отскоков при столкновении с другими объектами
+
+	// радиус поражения
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon");
+	float DamageRadius = 200.0f;
+
+	// количество наносимого Damage
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	float DamageAmount = 50.0f;
+
+	// урон одинаков или зависит от приближения к центру
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	bool DoFullDamage = false;
+
+	// переменная для времени жизни
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	float LifeSecond = 5.0f;
 
 
 	virtual void BeginPlay() override;
@@ -38,5 +54,11 @@ protected:
 private:
 	FVector ShotDirection; // переменная для хранения направления движения
 
+	// функция делегата коллизии CollisionComponent->OnComponentHit
+	UFUNCTION()
+	void OnProjectileHit ( UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
+
+	// функция получения указателя на текущий контроллер (для итоговой статистики)
+	AController* GetController() const;
 
 };

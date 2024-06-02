@@ -54,9 +54,18 @@ void ASTULauncherWeapon::MakeShot()
 	{
 		// передаем вектор направления (Direction), соспавненному актору ракеты
 		Projectile->SetShootDirection(Direction);
+		// по сути мы создали объект класса ASTUProjectile и записали его в переменную
+		// далее через эту переменную обращаемся к методам класса в поле public, передаем туда данные
+		// таким же способом мы можем передавать параметры Damage или любые другие в класс Projectile
+		// создаем переменную класса и через неё обращаемся к public методам класса
+
+		Projectile->SetOwner(GetOwner());
+		// присваиваем владельца Projectilу текущего Charactera т.к. оружие будет уустановлено у Charactera
+
 
 		// заершаем спавн
 		Projectile->FinishSpawning(SpawnTransform);
 	}
+
 
 }

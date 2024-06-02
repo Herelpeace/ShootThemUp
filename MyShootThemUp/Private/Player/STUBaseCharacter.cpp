@@ -129,7 +129,7 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("Fire",IE_Pressed,WeaponComponent, &USTUWeaponComponent::StartFire); // бинд функций стрельбы мышкой
 	PlayerInputComponent->BindAction("Fire",IE_Released,WeaponComponent, &USTUWeaponComponent::StopFire);
-
+	PlayerInputComponent->BindAction("NextWeapon", IE_Released, WeaponComponent, &USTUWeaponComponent::NextWeapon); // смена оружия
 }
 
 
@@ -240,6 +240,8 @@ void ASTUBaseCharacter::OnDeath()
 	// GetCapsuleComponent()            - получаем указатель на CapsuleComponent
 	// SetCollisionResponseToAllChannels - устанавливает параметры коллизии одинаково для всех каналов
 	// ECollisionResponse                - enum содержащий основные параметры коллизий ECR_Ignore, ECR_Overlap, ECR_Block
+
+	WeaponComponent->StopFire();
 }
 // OnDeath()
 

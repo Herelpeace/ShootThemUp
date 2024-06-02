@@ -20,15 +20,22 @@ public:
 
     void StartFire(); // старт стрельба мышкой 
     void StopFire();  // стоп стрельба мышкой 
+	void NextWeapon(); // при смене оружия
 
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")  // класс оружия которое хотим заспавнить
-	TSubclassOf<ASTUBaseWeapon>	WeaponClass;          // WeaponClass - переменная в которую передаем объекты класса ASTUBaseWeapon
+	// функция EndPlay вызывается у каждого компонента при вызове её у родительского актора 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")        // в редакторе будет массив в который можем добавлять элементы
+	TArray <TSubclassOf<ASTUBaseWeapon>>	WeaponClasses;  // WeaponClasses - массив из классов оружия
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	FName WeaponAttachPointName = "WeaponSocket";
+	FName WeaponEquipSocketName = "WeaponSocket";       // сокет для присоединения оружия в руке
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	FName WeaponArmorySocketName = "ArmorySocket";       // сокет для присоединения оружия на спине
 
 
 
@@ -37,7 +44,23 @@ private:
     // указатель на текущее оружие, изначально делаем нулевым
 	ASTUBaseWeapon* CurrentWeapon = nullptr;
 
-	void SpawnWeapon(); // функция спавна и присоединения соекта оружия к Mesh персонажа		
+	UPROPERTY()
+	TArray<ASTUBaseWeapon* > Weapons;
+	// массив указателей на акторы типа ASTUBaseWeapon - акторы оружия
+	// при смене оружия мы меняем значение указателя CurrentWeapon на значение указателя из данного массива
+
+	int32 CurrentWeaponIndex = 0;
+	// индекс элемента массива на который в данный момент ссылается указатель CurrentWeapon 
+
+	void SpawnWeapons(); // функция спавна и присоединения соекта оружия к Mesh персонажа	
+
+	// фцнкция присоединения модели оружия к модели персонажа
+	void AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName);
+
+	// функция устанавливает текущее оружие в руке персонажа, принимает индекс для массива Weapons
+	void EquipWeapon(int32 WeaponIndex);
+
+
 };
 
 

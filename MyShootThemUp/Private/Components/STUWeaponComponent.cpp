@@ -22,50 +22,119 @@ void USTUWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// спавн оружия при старте игры
-	SpawnWeapon();
+	CurrentWeaponIndex = 0; // индекс текущего оружия в массиве Weapons
+
+	// спавн оружия при старте игры, на спине персонажа
+	SpawnWeapons();
+
+	// устанавливаем текущее оружие в руках персонажа
+	EquipWeapon(CurrentWeaponIndex);
 
 }
 
-// функция делает спавн оружи и присоединяет его к персонажу
-void USTUWeaponComponent::SpawnWeapon()
+// удаляем оружие со сцены после уничтожения персонажа
+void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (!GetWorld())    return;
+	CurrentWeapon = 0;
 
-	// получаем ссылку на Character к которому приаттачиваем оружие
+	for (auto Weapon:Weapons)
+	{
+		// отсоединяем модель оружия от персонажа
+		Weapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform );
+		// удаляем актора оружия
+		Weapon->Destroy();
+	}
+
+	// очищаем массив
+	Weapons.Empty();
+
+	Super::EndPlay(EndPlayReason);
+
+}
+
+
+// функция делает спавн оружия и присоединяет его к персонажу за спину
+void USTUWeaponComponent::SpawnWeapons()
+{
+	// получаем указатель на Characterа к которому приаттачиваем оружие
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
 
-	if (!Character)	return;
+	if (!Character|| !GetWorld())	return;
+
+	// перебираем элементы массива оружия заполненные в редакторе и присоединяем их к персонажу
+	for (auto WeaponClass : WeaponClasses)  // в WeaponClass поочередно присваиваем элементы массива WeaponClasses?
+	{
+		auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
+		// Spawn оружия, после спавна CurrentWeapon перестанет быть нулевым
+		// ASTUBaseWeapon - класс оружия
+		// WeaponClass    - переменная типа ASTUBaseWeapon
+		// Сохраняем указатель на соспавненый объект в переменную Weapon
+
+		if (!Weapon)   continue;
+
+		// Заспавненому оружию присваиваем владельца
+		Weapon->SetOwner(Character);
+
+		// добавляем заспавненное оружие в массив Weapons
+		Weapons.Add(Weapon);
+
+		// присоединяем модель оружия к модели персонажа за спину
+		AttachWeaponToSocket(Weapon, Character->GetMesh(), WeaponArmorySocketName);
+		// Weapon - указатель на оружие которое хотим присоединить к персонажу
+		// Character->GetMesh() - эш персонажа
+
+	}
+
+	// CurrentWeapon->SetOwner(GetOwner());
+	//CurrentWeapon->SetOwner(Character);
+	// Компоненту CurrentWeapon, указываем владельца, чтобы через него получить доступ к камере в отрисовке Line Trace
+	// Задать владельца можно двумя способами GetOwner() или через переменную Character ( ACharacter* Character = Cast<ACharacter>(GetOwner());)
+}
 
 
-
-	CurrentWeapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
-	// Spawn оружия, после спавна CurrentWeapon перестанет быть нулевым
-	// ASTUBaseWeapon - класс оружия
-	// WeaponClass    - переменная типа ASTUBaseWeapon
-	// Сохраняем указатель на соспавненый объект в переменную Weapon
-
-	if (!CurrentWeapon)   return;
-
+// присоединеняем модель оружия к модели персонажа
+void USTUWeaponComponent::AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* SceneComponent , const FName& SocketName )
+{
+	if (!Weapon || !SceneComponent) return;
 
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
 	// заполняем структуру типа FAttachmentTransformRules, для передачи в качестве параметра в функцию
 	// AttachToComponent()
 
-	CurrentWeapon->AttachToComponent(Character->GetMesh(), AttachmentRules, WeaponAttachPointName);  
-	// приаттачиваем оружие к Meshу персонажа через сокет WeaponSoket
-	// SnapToTarget - актор наследует трансформацию от компонента к которому его присоединяют
-	// false        - параметр bInWeldSimulatedBodies - отвечает за физическую симуляцию когда два тела
-	// приаттачены друг к другу
-	// WeaponAttachPointName    - тектовая переменная, хранит имя сокета
-	// Character->GetMesh()     - указатель на SceletalMesh компонент charactera
+	//CurrentWeapon->AttachToComponent(Character->GetMesh(), AttachmentRules, WeaponAttachPointName);  старая функция 
+	
+	// функция присоединения модели оружия к модели персонажа
+	Weapon->AttachToComponent(SceneComponent, AttachmentRules, SocketName);
+	// SceneComponent           - получаем мэш, по сути это родительский класс мэша. Character->GetMesh()
 	// AttachmentRules          - переменная Attachment rools
-	// "WeaponSoket"            - название сокета, опциональный
+	// SocketName               - название сокета, опциональный
+}
 
-	// CurrentWeapon->SetOwner(GetOwner());
-	CurrentWeapon->SetOwner(Character);
-	// Компоненту CurrentWeapon, указываем владельца, чтобы через него получить доступ к камере в отрисовке Line Trace
-	// Задать владельца можно двумя способами GetOwner() или через переменную Character ( ACharacter* Character = Cast<ACharacter>(GetOwner());)
+// функция устанавливает текущее оружие в руке персонажа, принимает индекс для массива Weapons
+void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex)
+{
+	// получаем указатель на Characterа к которому приаттачиваем оружие
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+
+	if (!Character) return;
+
+	// при повторном вызове функции убираем текущее оружие за спину
+	if (CurrentWeapon)
+	{
+		// останавливаем стрельбу
+		CurrentWeapon->StopFire();
+
+		// присоединяем модель оружия к модели персонажа за спину
+		AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponArmorySocketName);
+		// Weapon - указатель на оружие которое хотим присоединить к персонажу
+		// Character->GetMesh() - эш персонажа
+	}
+
+	// в CurrentWeapon записываем указатель на текущее оружие
+	CurrentWeapon = Weapons[WeaponIndex];
+
+	// присоединяем его к рукам 
+	AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(),WeaponEquipSocketName);
 }
 
 
@@ -89,3 +158,16 @@ void USTUWeaponComponent::StopFire()
 	CurrentWeapon->StopFire();
 }
 // StopFire()
+
+// смена оружия
+void USTUWeaponComponent::NextWeapon()
+{
+	CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
+	// увеличиваем индекс текущего оружия на 1
+	// берем по модулю от длинны массива, чтобы не выйти за его границы
+	// Weapons.Num() - количество элементов в массиве Weapons
+
+	// меняем оружие на следующее
+	EquipWeapon(CurrentWeaponIndex);
+
+}

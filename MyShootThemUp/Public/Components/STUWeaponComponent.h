@@ -37,6 +37,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName WeaponArmorySocketName = "ArmorySocket";       // сокет для присоединения оружия на спине
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UAnimMontage* EquipAnimMontage;                     // указатель на анимацию смены оружия, все остальные персонажи так же подписываются на события
+	                                                    // Notify от этого AnimMontage
+
 
 
 private:
@@ -59,6 +63,15 @@ private:
 
 	// функция устанавливает текущее оружие в руке персонажа, принимает индекс для массива Weapons
 	void EquipWeapon(int32 WeaponIndex);
+
+	// проигрывание анимации
+	void PlayAnimMontage(UAnimMontage* Animation);
+
+	// находим Notify и подписываемся на него
+	void InitAnimations();
+
+	// callback который биндим на делегат OnNotified
+	void OnEquipFinished(USkeletalMeshComponent* MeshComponent);
 
 
 };

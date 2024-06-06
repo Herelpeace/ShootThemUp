@@ -5,6 +5,9 @@
 #include "Components/STUWeaponComponent.h"
 #include "Weapon/STUBaseWeapon.h"                     // наш класс оружи€
 #include "GameFramework/Character.h"                  // дл€ получени€ мэша к которому приаттачиваем оружие
+#include "Animations/STUEquipFinishedAnimNotify.h"    // наш класс Notify
+
+DEFINE_LOG_CATEGORY_STATIC(LogWeaponComponent, All, All);
 
 // Sets default values for this component's properties
 USTUWeaponComponent::USTUWeaponComponent()
@@ -23,6 +26,9 @@ void USTUWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	CurrentWeaponIndex = 0; // индекс текущего оружи€ в массиве Weapons
+
+	// проигрываем анимацию смены оружи€
+	InitAnimations();
 
 	// спавн оружи€ при старте игры, на спине персонажа
 	SpawnWeapons();
@@ -51,7 +57,6 @@ void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 }
-
 
 // функци€ делает спавн оружи€ и присоедин€ет его к персонажу за спину
 void USTUWeaponComponent::SpawnWeapons()
@@ -90,7 +95,6 @@ void USTUWeaponComponent::SpawnWeapons()
 	//  омпоненту CurrentWeapon, указываем владельца, чтобы через него получить доступ к камере в отрисовке Line Trace
 	// «адать владельца можно двум€ способами GetOwner() или через переменную Character ( ACharacter* Character = Cast<ACharacter>(GetOwner());)
 }
-
 
 // присоединен€ем модель оружи€ к модели персонажа
 void USTUWeaponComponent::AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* SceneComponent , const FName& SocketName )
@@ -135,8 +139,10 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex)
 
 	// присоедин€ем его к рукам 
 	AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(),WeaponEquipSocketName);
-}
 
+	// анимаци€ смены оружи€
+	PlayAnimMontage(EquipAnimMontage);
+}
 
 // старт стрельбы
 void USTUWeaponComponent::StartFire()
@@ -147,7 +153,6 @@ void USTUWeaponComponent::StartFire()
 	CurrentWeapon->StartFire();
 }
 // StartFire()
-
 
 // стоп стрельбы
 void USTUWeaponComponent::StopFire()
@@ -169,5 +174,57 @@ void USTUWeaponComponent::NextWeapon()
 
 	// мен€ем оружие на следующее
 	EquipWeapon(CurrentWeaponIndex);
+}
+
+// проигрывание анимации
+void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
+{
+	// получаем указатель на Character т.к в нем есть функци€ проигрывани€ AnimMontage
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+	
+	if (!Character) return;
+
+	// анимаци€ смены оружи€
+	Character->PlayAnimMontage(Animation);
+}
+
+// находим Notify и подписываемс€ на него
+void USTUWeaponComponent::InitAnimations()
+{
+	if (!EquipAnimMontage) return;
+
+	// получаем значени€ массива структур эвентов Notifys. 	TArray<struct FAnimNotifyEvent> Notifies;
+	// масиив анимационных эвентов
+	const auto NotifyEvents = EquipAnimMontage->Notifies;
+
+	// перебираем элементы массива
+	for (auto NotifyEvent : NotifyEvents)
+	{
+		auto EquipFinishedNotify = Cast<USTUEquipFinishedAnimNotify>(NotifyEvent.Notify);
+
+		// EquipFinishedNotify - сохран€ем найденный указатель Notify, в локальную переменную
+		// NotifyEvent.Notify  - в поле Notify содержитс€ Notify
+		// Cast <>             - делаем Cast до нашего класса, если Cast прошел успешно значит Notify из нашего класса
+
+		// вызываем делегат если Notify найден
+		if (EquipFinishedNotify)
+		{
+			// биндим функцию на делегат
+			EquipFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnEquipFinished);
+			break;
+		}
+	}
+}
+
+// callback который биндим на делегат OnNotified, передаем в него ћэш Charactera, чтобы логика на событие Notify срабатывала только у персонажа 
+void USTUWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent)
+{
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+	if (!Character) return;
+
+	if (Character->GetMesh() == MeshComponent)
+	{
+		UE_LOG(LogWeaponComponent, Warning, TEXT("Equip Finished"));
+	}
 
 }

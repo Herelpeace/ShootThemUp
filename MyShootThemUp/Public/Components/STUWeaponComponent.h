@@ -56,6 +56,9 @@ private:
 	int32 CurrentWeaponIndex = 0;
 	// индекс элемента массива на который в данный момент ссылается указатель CurrentWeapon 
 
+	// флаг, будет иметь значение true при смене оружия и стрельбе,по ее значению определяем можно менять оружие или стрелять
+	bool EquipAnimProgress = false;
+
 	void SpawnWeapons(); // функция спавна и присоединения соекта оружия к Mesh персонажа	
 
 	// фцнкция присоединения модели оружия к модели персонажа
@@ -72,6 +75,12 @@ private:
 
 	// callback который биндим на делегат OnNotified
 	void OnEquipFinished(USkeletalMeshComponent* MeshComponent);
+
+	// вернет true когда можно стрелять
+	bool CanFire() const;
+
+	// вернет true когда можно менять оружие
+	bool CanEquip() const;
 
 
 };

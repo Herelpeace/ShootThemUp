@@ -140,6 +140,9 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex)
 	// присоединяем его к рукам 
 	AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(),WeaponEquipSocketName);
 
+	// перед проигрыванием анимации меняем состояние флага на true
+	EquipAnimProgress = true;
+
 	// анимация смены оружия
 	PlayAnimMontage(EquipAnimMontage);
 }
@@ -147,7 +150,8 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex)
 // старт стрельбы
 void USTUWeaponComponent::StartFire()
 {
-	if (!CurrentWeapon) return;
+	// проверка, проигрывается ли анимация
+	if (!CanFire()) return;
 
 	// из класса STUBaseWeapon.h вызыавем функциб StartFire
 	CurrentWeapon->StartFire();
@@ -167,6 +171,8 @@ void USTUWeaponComponent::StopFire()
 // смена оружия
 void USTUWeaponComponent::NextWeapon()
 {
+	// проверяем можно ли менять оружие (проигрывается ли анимация смены оружия)
+	if (!CanEquip()) return;
 	CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
 	// увеличиваем индекс текущего оружия на 1
 	// берем по модулю от длинны массива, чтобы не выйти за его границы
@@ -220,11 +226,23 @@ void USTUWeaponComponent::InitAnimations()
 void USTUWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent)
 {
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
-	if (!Character) return;
+	if (!Character || MeshComponent != Character->GetMesh()) return;
 
-	if (Character->GetMesh() == MeshComponent)
-	{
-		UE_LOG(LogWeaponComponent, Warning, TEXT("Equip Finished"));
-	}
+	// после проигрывания амнимации возвращаем флаг в прежнее состояние
+	EquipAnimProgress = false;
+}
 
+
+// вернет true когда можно стрелять
+bool USTUWeaponComponent::CanFire() const
+{
+	// если указатель на текущее оружие не нулевой и не проигрывается анимация смены или стрельбы
+	return CurrentWeapon && !EquipAnimProgress;
+
+}
+
+// вернет true когда можно менять оружие
+bool USTUWeaponComponent::CanEquip() const
+{
+	return !EquipAnimProgress;
 }

@@ -11,6 +11,27 @@
 
 class USkeletalMeshComponent; // Forward declaration
 
+// структура в которой храним количество патронов в магазине
+USTRUCT(BlueprintType)
+struct FAmmoData
+{
+	GENERATED_USTRUCT_BODY()
+
+		// количество патронов в магазине, количество через которое перезаряжаемся
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+		int32 Bullets;
+
+		// количество магазинов у текущего оружия, количество перезарядок
+	    // доступно для редактирования когда Infinite = false, т.е число магазинов ограничено
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", meta = (EditCondition = "!Infinite"))
+		int32 Clips;
+
+		// конечное число магазинов или нет
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+		bool Infinite;
+};
+
+
 UCLASS()
 class MYSHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 {
@@ -34,7 +55,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     float TraceMaxDistance = 1500.0f; // расстояние выстрела 1500 см = 15м
 
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	FAmmoData DefaultAmmo {15,10,false};  // создаем объект структуры FAmmoData, заполняем его дефолтными данными
 
 	virtual void MakeShot();
 
@@ -54,5 +76,25 @@ protected:
 
 	// получаем данные о пересечении (столкновении)
 	void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd); 
+
+	// уменьшает количество патронов, вызывается после каждого выстрела
+	void DecreaseAmmo();
+
+	// true когда арсенал полностью пустой, количество магазинов и патронов = 0
+	bool IsAmmoEmpty() const;
+
+	// true когда текущий магазин пустой
+	bool IsClipEmpty() const;
+
+	// меняет магазин на новый
+	void ChangeClip();
+
+	// выводит состояние аммуниции в консоль
+	void LogAmmo();
+
+private:
+	// только для использования внутри c++ классе, не должна быть видна в БП
+	// храним текущее количество патронов, магазинов
+	FAmmoData CurrentAmmo;
 
 };

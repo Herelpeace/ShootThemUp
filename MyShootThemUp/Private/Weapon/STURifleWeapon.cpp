@@ -40,13 +40,23 @@ void ASTURifleWeapon::StopFire()
 // функция содержит всю логику выстрела
 void ASTURifleWeapon::MakeShot()
 {
-	// проверка мира на null
-	if (!GetWorld()) return;
+	UE_LOG(LogTemp, Warning, TEXT("Make Shot"));
+
+	// проверка мира на null, аммуниция пуста IsAmmoEmpty() = true
+	if (!GetWorld() || IsAmmoEmpty())
+	{
+		StopFire();
+		return;
+	}
 
 	FVector TraceStart, TraceEnd;
 	// начальная и конечная точки выстрела
 
-	if (!GetTraceData(TraceStart, TraceEnd)) return;
+	if (!GetTraceData(TraceStart, TraceEnd))
+	{
+		StopFire();
+		return;
+	}
 
 	FHitResult HitResult;
 	// структура в которую сохраняем информацию о пересечении LineTrace с объектами
@@ -101,6 +111,8 @@ void ASTURifleWeapon::MakeShot()
 		// если никуда не попали то конечную точку рисуем в TraceEnd
 	}
 
+	// уменьшаем количество патронов
+	DecreaseAmmo();
 }
 // MakeShot() 
 

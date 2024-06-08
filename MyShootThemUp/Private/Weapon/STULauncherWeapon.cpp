@@ -14,8 +14,8 @@ void ASTULauncherWeapon::StartFire()
 
 void ASTULauncherWeapon::MakeShot()
 {
-	// проверка мира на null
-	if (!GetWorld()) return;
+	// проверка мира на null, аммуниция пуста IsAmmoEmpty() = true
+	if (!GetWorld()||IsAmmoEmpty()) return;
 
 	FVector TraceStart, TraceEnd;
 	// начальная и конечная точки выстрела
@@ -66,6 +66,9 @@ void ASTULauncherWeapon::MakeShot()
 		// заершаем спавн
 		Projectile->FinishSpawning(SpawnTransform);
 	}
+
+	// уменьшаем количество патронов
+	DecreaseAmmo();
 
 
 }

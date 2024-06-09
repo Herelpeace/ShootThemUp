@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "STUBaseWeapon.generated.h"
 
+// делегат оповещает WeaponComponent о том что закончились патроны
+DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature)
 
 
 class USkeletalMeshComponent; // Forward declaration
@@ -40,9 +42,15 @@ class MYSHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 public:	
 	ASTUBaseWeapon();
 
+	// объект делегата, оповещает WeaponComponent о том что закончились патроны
+	FOnClipEmptySignature OnClipEmpty;
+
 	// делаем виртуальной т.к. для разных оружий (наследников) будем переопределять свою функцию 
 	virtual	void StartFire(); // старт стрельба из оружия 
 	virtual	void StopFire();  // стоп стрельба из оружия 
+	void ChangeClip();        // меняет магазин на новый, WeaponComponent вызывает функцию если нужна перезарядка
+
+	bool CanReload() const;  // можно ли делать перезарядку
 
 protected:
 
@@ -85,9 +93,6 @@ protected:
 
 	// true когда текущий магазин пустой
 	bool IsClipEmpty() const;
-
-	// меняет магазин на новый
-	void ChangeClip();
 
 	// выводит состояние аммуниции в консоль
 	void LogAmmo();

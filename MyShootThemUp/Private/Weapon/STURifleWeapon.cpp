@@ -12,9 +12,6 @@ void ASTURifleWeapon::StartFire()
 {
 	// UE_LOG(LogBaseWeapon, Warning, TEXT(" StartFire!!! "));
 
-	// функция производит выстрел
-	MakeShot();
-
 	// запуск таймера
 	GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTURifleWeapon::MakeShot, TimeBetweenShots, true);
 
@@ -24,6 +21,8 @@ void ASTURifleWeapon::StartFire()
 	// TimeBetweenShots          - время между вызовами функции ( float переменная,скорость стрельбы)
 	// true                      - цикличная работа таймера ( false - единорозовый вызов )
 
+	// функция производит выстрел
+	MakeShot();
 }
 
 

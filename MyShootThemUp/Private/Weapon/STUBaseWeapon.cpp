@@ -28,7 +28,7 @@ void ASTUBaseWeapon::BeginPlay()
 
 	check(WeaponMesh);  // проверяем Mash оружия, если его нет, то ничего не отрисовываем
 
-	// текущее количиство аммуниции равно дефолтноиу количеству
+	// текущее количество аммуниции равно дефолтноиу количеству
 	CurrentAmmo = DefaultAmmo;
 }
 
@@ -167,16 +167,35 @@ void ASTUBaseWeapon::MakeHit( FHitResult& HitResult, const FVector& TraceStart, 
 // уменьшает количество патронов, вызывается после каждого выстрела
 void ASTUBaseWeapon::DecreaseAmmo()
 {
+	// если количество магазинов равно 0, выводим сообщение,выходим
+	if (CurrentAmmo.Bullets == 0)
+	{
+		UE_LOG(LogBaseWeapon, Warning, TEXT("Clip is empty!"));
+		return;
+	}
+
 	CurrentAmmo.Bullets--;
 	
 	LogAmmo();
 
+
 	// меняем магазин если количество патронов в магазине равно 0 и количество патронов в арсенале не равно 0
+	// вызываем делегат
 	if (IsClipEmpty() && !IsAmmoEmpty())
 	{
-		// меняем магазин
-		ChangeClip();
+		// останавливаем стрельбу
+		StopFire();
+		// вызываем делегат 
+		OnClipEmpty.Broadcast();
 	}
+	// делаем выстрел, запускаем таймер, отнимаем 1 патрон, вызываем делегат, после чего запускается перезарядка 
+	// (если количество пуль = 0), перезарядка сразу задает новое кличество патронов и к моменту срабатыавния таймера
+	// магазин не пустой, поэтому оружие продолжает стрелять во время перезарядки 
+	// поэтому вызыаем StopFire(); в ней таймер очищается
+	// в классе STURifleWeapon меняем местами запуск таймера и функцию MakeShot()
+	// иначе StopFire() не получит валидный TimerHandle
+	// сначала создаем таймер потом стреляем, и если пуль нет то очищаем таймер
+	// а могло быть, сначала стреляем, пуль нет - очищаем таймер, а он не создан
 
 }
 
@@ -197,17 +216,32 @@ bool ASTUBaseWeapon::IsClipEmpty() const
 // меняет магазин на новый
 void ASTUBaseWeapon::ChangeClip()
 {
-	CurrentAmmo.Bullets = DefaultAmmo.Bullets;
-
 	// если количество магазинов не бесконечное
 	if (!CurrentAmmo.Infinite)
 	{
+		// если количество магазинов равно 0, выводим сообщение,выходим
+		if (CurrentAmmo.Clips==0)
+		{
+			UE_LOG(LogBaseWeapon, Warning, TEXT("No More Clips"));
+			return;
+		}
 		CurrentAmmo.Clips--;
 	}
+
+	// количество пуль в магазине равно дефолтному
+	CurrentAmmo.Bullets = DefaultAmmo.Bullets;
 
 	UE_LOG(LogBaseWeapon, Warning, TEXT("------Change Clip ------"));
 
 }
+
+// можно ли делать перезарядку
+bool ASTUBaseWeapon::CanReload() const
+{
+	return CurrentAmmo.Bullets < DefaultAmmo.Bullets && CurrentAmmo.Clips>0;
+	// делаем перезарядку если количество патронов меньше дефолтного и магазинов > 0
+}
+
 
 // выводит состояние аммуниции в консоль
 void ASTUBaseWeapon::LogAmmo()

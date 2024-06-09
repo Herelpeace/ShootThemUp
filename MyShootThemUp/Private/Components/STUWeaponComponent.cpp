@@ -78,6 +78,9 @@ void USTUWeaponComponent::SpawnWeapons()
 
 		if (!Weapon)   continue;
 
+		// при срабатывании делегата OnClipEmpty будет вызвана функци€ OnEmptyClip в данном классе
+		Weapon->OnClipEmpty.AddUObject(this, &USTUWeaponComponent::OnEmptyClip);
+
 		// «аспавненому оружию присваиваем владельца
 		Weapon->SetOwner(Character);
 
@@ -312,14 +315,36 @@ bool USTUWeaponComponent::CanEquip() const
 // вернет true когда можно перезар€жатьс€
 bool USTUWeaponComponent::CanReload() const
 {
-	// если указатель на текущее оружие не нулевой и не проигрываетс€ анимаци€ смены или стрельбы или перезар€дки
-	return CurrentWeapon && !EquipAnimProgress && !ReloadAnimProgress;
+	// если указатель на текущее оружие не нулевой и не проигрываетс€ анимаци€ смены или стрельбы или перезар€дки и  количество патронов меньше дефолтного и магазинов > 0
+	return CurrentWeapon && !EquipAnimProgress && !ReloadAnimProgress && CurrentWeapon->CanReload();
 }
 
-// перезар€дка
+// перезар€дка по нажатию клавиши
 void USTUWeaponComponent::Reload()
 {
+	ChangeClip();
+}
+
+// перезарадка по делегату, callback на делегат OnClipEmpty
+void USTUWeaponComponent::OnEmptyClip()
+{
+	ChangeClip();
+}
+
+// вс€ логика перезар€дки находитс€ в этой функции
+void USTUWeaponComponent::ChangeClip()
+{
 	if (!CanReload()) return;
+
+	CurrentWeapon->StopFire();
+
+	// функци€ перезар€дки у базового класса 
+	CurrentWeapon->ChangeClip();
+
+	// выставл€м флаг на врем€ перезар€дки
 	ReloadAnimProgress = true;
+	
+	// проигрываем анимацию перезар€дки
 	PlayAnimMontage(CurrentReloadAnimMontage);
+
 }

@@ -111,6 +111,12 @@ private:
 	// вернет true когда можно перезар€жатьс€
 	bool CanReload() const;
 
+	// callback на делегат OnClipEmpty
+	void OnEmptyClip();
+
+	// вс€ логика перезар€дки находитс€ в этой функции
+	void ChangeClip();
+
 
 	// шаблонна€ функци€ поиска notify в заданном классе
 	// template <typename T> - объ€вление шаблонной функции

@@ -79,6 +79,9 @@ private:
 	// флаг, будет иметь значение true при смене оружия и стрельбе,по ее значению определяем можно менять оружие или стрелять
 	bool EquipAnimProgress = false;
 
+	// флаг, будет иметь значение true при смене оружия и стрельбе,по ее значению определяем можно менять оружие или стрелять
+	bool ReloadAnimProgress = false;
+
 	void SpawnWeapons(); // функция спавна и присоединения соекта оружия к Mesh персонажа	
 
 	// фцнкция присоединения модели оружия к модели персонажа
@@ -93,14 +96,54 @@ private:
 	// находим Notify и подписываемся на него
 	void InitAnimations();
 
-	// callback который биндим на делегат OnNotified
+	// callback который биндим на делегат OnNotified смены оружия
 	void OnEquipFinished(USkeletalMeshComponent* MeshComponent);
+
+	// callback который биндим на делегат OnNotified перезарядки
+	void OnReloadFinished(USkeletalMeshComponent* MeshComponent);
 
 	// вернет true когда можно стрелять
 	bool CanFire() const;
 
 	// вернет true когда можно менять оружие
 	bool CanEquip() const;
+
+	// вернет true когда можно перезаряжаться
+	bool CanReload() const;
+
+
+	// шаблонная функция поиска notify в заданном классе
+	// template <typename T> - объявление шаблонной функции
+	// T*                    - возвращает указатель на тип T
+	// FindNotifyByClass     - имя функции
+	// UAnimSequenceBase*    - в данном классе содержится массив всех notify
+	template <typename T>
+	T* FindNotifyByClass(UAnimSequenceBase* Animation)
+	{
+		if (!Animation) return nullptr;
+
+		// получаем значения массива структур эвентов Notifys. 	TArray<struct FAnimNotifyEvent> Notifies;
+		// масиив анимационных эвентов
+		const auto NotifyEvents = Animation->Notifies;
+
+		// перебираем элементы массива
+		for (auto NotifyEvent : NotifyEvents)
+		{
+			auto AnimNotify = Cast<T>(NotifyEvent.Notify);
+
+			// EquipFinishedNotify - сохраняем найденный указатель Notify, в локальную переменную
+			// NotifyEvent.Notify  - в поле Notify содержится Notify
+			// Cast <>             - делаем Cast до нашего класса, если Cast прошел успешно значит Notify из нашего класса
+
+			// вызываем делегат если Notify найден
+			if (AnimNotify)
+			{
+				return AnimNotify;
+			}
+		}
+		return nullptr;
+	}
+
 
 
 };

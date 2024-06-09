@@ -4,23 +4,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Animation/AnimNotifies/AnimNotify.h"
+#include "Animations/STUAnimNotify.h"
 #include "STUEquipFinishedAnimNotify.generated.h"
 
-// объ€вл€ем делегат, по указателю USkeletalMeshComponent* определ€ем, если анимаци€ не дл€ нашего скелета, то Notify дл€ неЄ не обрабатываем
-DECLARE_MULTICAST_DELEGATE_OneParam (FOnNotifiedSignature, USkeletalMeshComponent*);
 
+// мен€ем родительский класс на USTUAnimNotify
 UCLASS()
-class MYSHOOTTHEMUP_API USTUEquipFinishedAnimNotify : public UAnimNotify
+class MYSHOOTTHEMUP_API USTUEquipFinishedAnimNotify : public USTUAnimNotify
 {
 	GENERATED_BODY()
 	
-public:
-	    // функци€ через которую мы можем получить доступ к событию Notify ?
-		virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
-
-
-		// создаем объект делегата
-		FOnNotifiedSignature OnNotified;
 
 };

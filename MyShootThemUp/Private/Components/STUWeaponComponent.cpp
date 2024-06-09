@@ -5,7 +5,8 @@
 #include "Components/STUWeaponComponent.h"
 #include "Weapon/STUBaseWeapon.h"                     // наш класс оружия
 #include "GameFramework/Character.h"                  // для получения мэша к которому приаттачиваем оружие
-#include "Animations/STUEquipFinishedAnimNotify.h"    // наш класс Notify
+#include "Animations/STUEquipFinishedAnimNotify.h"    // наш класс Notify 1
+#include "Animations/STUReloadFinishedAnimNotify.h"   // notify перезарядки
 
 DEFINE_LOG_CATEGORY_STATIC(LogWeaponComponent, All, All);
 
@@ -223,6 +224,7 @@ void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
 // находим Notify и подписываемся на него
 void USTUWeaponComponent::InitAnimations()
 {
+	/*
 	if (!EquipAnimMontage) return;
 
 	// получаем значения массива структур эвентов Notifys. 	TArray<struct FAnimNotifyEvent> Notifies;
@@ -246,6 +248,30 @@ void USTUWeaponComponent::InitAnimations()
 			break;
 		}
 	}
+
+	*/
+	
+	// шаблонная функция которая ищет notify 
+	auto EquipFinishedNotify = FindNotifyByClass<USTUEquipFinishedAnimNotify>(EquipAnimMontage);
+
+	// вызываем делегат если Notify найден
+	if (EquipFinishedNotify)
+	{
+		// биндим функцию на делегат
+		EquipFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnEquipFinished);
+	}
+
+	for (auto OneWeaponData : WeaponData)
+	{
+		// шаблонная функция которая ищет notify 
+		auto ReloadFinishedNotify = FindNotifyByClass<USTUReloadFinishedAnimNotify>(OneWeaponData.ReloadAnimMontage);
+		// если ничего не нашли переходим к следующему элементу
+		if (!ReloadFinishedNotify) continue;
+
+		// биндим функцию окончания перезарядки на делегат
+		ReloadFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnReloadFinished);
+	}
+
 }
 
 // callback который биндим на делегат OnNotified, передаем в него Мэш Charactera, чтобы логика на событие Notify срабатывала только у персонажа 
@@ -258,23 +284,42 @@ void USTUWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComponent)
 	EquipAnimProgress = false;
 }
 
+// callback который биндим на делегат OnNotified, передаем в него Мэш Charactera, чтобы логика на событие Notify срабатывала только у персонажа 
+void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComponent)
+{
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+	if (!Character || MeshComponent != Character->GetMesh()) return;
+
+	// после проигрывания амнимации возвращаем флаг в прежнее состояние
+	ReloadAnimProgress = false;
+}
+
 
 // вернет true когда можно стрелять
 bool USTUWeaponComponent::CanFire() const
 {
 	// если указатель на текущее оружие не нулевой и не проигрывается анимация смены или стрельбы
-	return CurrentWeapon && !EquipAnimProgress;
+	return CurrentWeapon && !EquipAnimProgress && !ReloadAnimProgress;
 
 }
 
 // вернет true когда можно менять оружие
 bool USTUWeaponComponent::CanEquip() const
 {
-	return !EquipAnimProgress;
+	return !EquipAnimProgress && !ReloadAnimProgress;
+}
+
+// вернет true когда можно перезаряжаться
+bool USTUWeaponComponent::CanReload() const
+{
+	// если указатель на текущее оружие не нулевой и не проигрывается анимация смены или стрельбы или перезарядки
+	return CurrentWeapon && !EquipAnimProgress && !ReloadAnimProgress;
 }
 
 // перезарядка
 void USTUWeaponComponent::Reload()
 {
+	if (!CanReload()) return;
+	ReloadAnimProgress = true;
 	PlayAnimMontage(CurrentReloadAnimMontage);
 }

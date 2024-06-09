@@ -67,12 +67,12 @@ void USTUWeaponComponent::SpawnWeapons()
 	if (!Character|| !GetWorld())	return;
 
 	// перебираем элементы массива оружия заполненные в редакторе и присоединяем их к персонажу
-	for (auto WeaponClass : WeaponClasses)  // в WeaponClass поочередно присваиваем элементы массива WeaponClasses?
+	for (auto OneWeaponData : WeaponData)  // в OneWeaponData поочередно присваиваем элементы массива структур WeaponData?
 	{
-		auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
+		auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(OneWeaponData.WeaponClass);
 		// Spawn оружия, после спавна CurrentWeapon перестанет быть нулевым
-		// ASTUBaseWeapon - класс оружия
-		// WeaponClass    - переменная типа ASTUBaseWeapon
+		// ASTUBaseWeapon               - класс оружия
+		// OneWeaponData.WeaponClass    - поле структуры OneWeaponData, типа ASTUBaseWeapon
 		// Сохраняем указатель на соспавненый объект в переменную Weapon
 
 		if (!Weapon)   continue;
@@ -117,6 +117,13 @@ void USTUWeaponComponent::AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneCom
 // функция устанавливает текущее оружие в руке персонажа, принимает индекс для массива Weapons
 void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex)
 {
+	// проверка корректности индекса массива
+	if (WeaponIndex < 0 || WeaponIndex >= Weapons.Num())
+	{
+		UE_LOG(LogWeaponComponent, Warning, TEXT("Invalid Weapon Index"))
+		return;
+	}
+
 	// получаем указатель на Characterа к которому приаттачиваем оружие
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
 
@@ -136,6 +143,25 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex)
 
 	// в CurrentWeapon записываем указатель на текущее оружие
 	CurrentWeapon = Weapons[WeaponIndex];
+
+	// меняем анимацию перезарядки, может работать некорректно при сортировке массива
+	//CurrentReloadAnimMontage = WeaponData[WeaponIndex].ReloadAnimMontage;
+	// WeaponData[WeaponIndex] - индекс структуры в которой содержится класс текущего оружия и его анимация перезарядки
+
+	// более надежный способ, пробегаем по массиву со структурами WeaponData и ищем структуру
+	// которая соответствует текущему классу оружия
+	// после нахождения структуры берем из нее анимацию перезарядки
+
+	const auto CurrentWeaponData = WeaponData.FindByPredicate([&](const FWeaponData& Data) { return Data.WeaponClass == CurrentWeapon->GetClass(); });
+	// в WeaponData ищем структуру которая будет равна CurrentWeapon->GetClass(); ,текущему классу оружия
+	// CurrentWeaponData - переменная для сохранения найденной структуры
+	// FindByPredicate   - функция массива, которая ищет в массиве элемент по заданным параметрам 
+	// [&]               - нужен чтобы захватить внешнюю переменную CurrentWeapon
+	// [&](const FWeaponData& Data) { return Data.WeaponClass == CurrentWeapon->GetClass() - лямбда выражение
+	// при первом совпадении с элементом массива,вернется указатель на этот элемент
+
+	// в переменную текущей анимации присваиваем анимацию текущего оружия найденного в массиве
+	CurrentReloadAnimMontage = CurrentWeaponData ? CurrentWeaponData->ReloadAnimMontage : nullptr;
 
 	// присоединяем его к рукам 
 	AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(),WeaponEquipSocketName);
@@ -245,4 +271,10 @@ bool USTUWeaponComponent::CanFire() const
 bool USTUWeaponComponent::CanEquip() const
 {
 	return !EquipAnimProgress;
+}
+
+// перезарядка
+void USTUWeaponComponent::Reload()
+{
+	PlayAnimMontage(CurrentReloadAnimMontage);
 }

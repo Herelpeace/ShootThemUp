@@ -10,6 +10,21 @@
 
 class ASTUBaseWeapon; // Forward Declaration нашего класса оружия
 
+// структура в которой храним класс оружия и соответствующую ему анимацию перезарядки
+// в редакторе будут поля в которые сможем устанавливать соостветствующие БП
+USTRUCT(BlueprintType)
+struct FWeaponData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")        // в редакторе будет ?
+	TSubclassOf<ASTUBaseWeapon> WeaponClass;  // переменная класса оружия
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	UAnimMontage* ReloadAnimMontage;   // в переменной будем хранить анимацию перезарядки для данного оружия
+};
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYSHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent
 {
@@ -18,18 +33,19 @@ class MYSHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent
 public:	
 	USTUWeaponComponent();
 
-    void StartFire(); // старт стрельба мышкой 
-    void StopFire();  // стоп стрельба мышкой 
+    void StartFire();  // старт стрельба мышкой 
+    void StopFire();   // стоп стрельба мышкой 
 	void NextWeapon(); // при смене оружия
+	void Reload();     // перезарядка
 
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon") // в редакторе будет массив с кнопкой +
+	TArray<FWeaponData> WeaponData;	     // массив структур хранящих класс оружия и его анимацию
+
 	// функция EndPlay вызывается у каждого компонента при вызове её у родительского актора 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")        // в редакторе будет массив в который можем добавлять элементы
-	TArray <TSubclassOf<ASTUBaseWeapon>>	WeaponClasses;  // WeaponClasses - массив из классов оружия
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName WeaponEquipSocketName = "WeaponSocket";       // сокет для присоединения оружия в руке
@@ -52,6 +68,10 @@ private:
 	TArray<ASTUBaseWeapon* > Weapons;
 	// массив указателей на акторы типа ASTUBaseWeapon - акторы оружия
 	// при смене оружия мы меняем значение указателя CurrentWeapon на значение указателя из данного массива
+
+	UPROPERTY()
+	UAnimMontage* CurrentReloadAnimMontage = nullptr;
+	// текущая анимация перезарядки 
 
 	int32 CurrentWeaponIndex = 0;
 	// индекс элемента массива на который в данный момент ссылается указатель CurrentWeapon 

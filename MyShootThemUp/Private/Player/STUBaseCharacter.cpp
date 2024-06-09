@@ -130,6 +130,7 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Fire",IE_Pressed,WeaponComponent, &USTUWeaponComponent::StartFire); // бинд функций стрельбы мышкой
 	PlayerInputComponent->BindAction("Fire",IE_Released,WeaponComponent, &USTUWeaponComponent::StopFire);
 	PlayerInputComponent->BindAction("NextWeapon", IE_Released, WeaponComponent, &USTUWeaponComponent::NextWeapon); // смена оружия
+	PlayerInputComponent->BindAction("Reload",IE_Pressed,WeaponComponent, &USTUWeaponComponent::Reload); // перезарядка
 }
 
 

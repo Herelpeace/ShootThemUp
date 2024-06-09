@@ -5,24 +5,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "STUCoreType.h"
 #include "STUWeaponComponent.generated.h"
 
 
 class ASTUBaseWeapon; // Forward Declaration нашего класса оружия
 
-// структура в которой храним класс оружия и соответствующую ему анимацию перезарядки
-// в редакторе будут поля в которые сможем устанавливать соостветствующие БП
-USTRUCT(BlueprintType)
-struct FWeaponData
-{
-	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")        // в редакторе будет ?
-	TSubclassOf<ASTUBaseWeapon> WeaponClass;  // переменная класса оружия
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-	UAnimMontage* ReloadAnimMontage;   // в переменной будем хранить анимацию перезарядки для данного оружия
-};
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -118,37 +107,7 @@ private:
 	void ChangeClip();
 
 
-	// шаблонная функция поиска notify в заданном классе
-	// template <typename T> - объявление шаблонной функции
-	// T*                    - возвращает указатель на тип T
-	// FindNotifyByClass     - имя функции
-	// UAnimSequenceBase*    - в данном классе содержится массив всех notify
-	template <typename T>
-	T* FindNotifyByClass(UAnimSequenceBase* Animation)
-	{
-		if (!Animation) return nullptr;
 
-		// получаем значения массива структур эвентов Notifys. 	TArray<struct FAnimNotifyEvent> Notifies;
-		// масиив анимационных эвентов
-		const auto NotifyEvents = Animation->Notifies;
-
-		// перебираем элементы массива
-		for (auto NotifyEvent : NotifyEvents)
-		{
-			auto AnimNotify = Cast<T>(NotifyEvent.Notify);
-
-			// EquipFinishedNotify - сохраняем найденный указатель Notify, в локальную переменную
-			// NotifyEvent.Notify  - в поле Notify содержится Notify
-			// Cast <>             - делаем Cast до нашего класса, если Cast прошел успешно значит Notify из нашего класса
-
-			// вызываем делегат если Notify найден
-			if (AnimNotify)
-			{
-				return AnimNotify;
-			}
-		}
-		return nullptr;
-	}
 
 
 

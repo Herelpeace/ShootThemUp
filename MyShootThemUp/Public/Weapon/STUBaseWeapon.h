@@ -5,33 +5,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "STUCoreType.h"
 #include "STUBaseWeapon.generated.h"
-
-// делегат оповещает WeaponComponent о том что закончились патроны
-DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature)
 
 
 class USkeletalMeshComponent; // Forward declaration
-
-// структура в которой храним количество патронов в магазине
-USTRUCT(BlueprintType)
-struct FAmmoData
-{
-	GENERATED_USTRUCT_BODY()
-
-		// количество патронов в магазине, количество через которое перезаряжаемся
-		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-		int32 Bullets;
-
-		// количество магазинов у текущего оружия, количество перезарядок
-	    // доступно для редактирования когда Infinite = false, т.е число магазинов ограничено
-		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", meta = (EditCondition = "!Infinite"))
-		int32 Clips;
-
-		// конечное число магазинов или нет
-		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-		bool Infinite;
-};
 
 
 UCLASS()

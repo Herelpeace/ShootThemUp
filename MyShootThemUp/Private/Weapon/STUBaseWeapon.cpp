@@ -28,6 +28,11 @@ void ASTUBaseWeapon::BeginPlay()
 
 	check(WeaponMesh);  // проверяем Mash оружия, если его нет, то ничего не отрисовываем
 
+    // ведет себя как check только еще можно вывести текст
+	// на случай если в БП выставлено некорректное количество пуль в магазине
+	checkf(DefaultAmmo.Bullets>0,TEXT("Bullets count couldn't be less or equal zero"));  // некорректное количество пуль
+	checkf(DefaultAmmo.Clips>0,  TEXT("Clips count couldn't be less or equal zero"));    // некорректное количество магазинов
+
 	// текущее количество аммуниции равно дефолтноиу количеству
 	CurrentAmmo = DefaultAmmo;
 }

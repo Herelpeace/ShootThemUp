@@ -5,16 +5,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "STUCoreType.h"
 #include "STUHealthActorComponent.generated.h"
 
-// делегат оповещает жив персонаж или нет
-// доступен только в С++
-// все делегаты начинаются с буквы F
-DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
 
-// создаем делегат с 1 параметром, имя FOnHealthChanged, тип параметров float
-// вызываем делегат когда происходит изменение Health
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYSHOOTTHEMUP_API USTUHealthActorComponent : public UActorComponent

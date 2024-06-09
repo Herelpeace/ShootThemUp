@@ -7,8 +7,12 @@
 #include "GameFramework/Character.h"                  // для получения мэша к которому приаттачиваем оружие
 #include "Animations/STUEquipFinishedAnimNotify.h"    // наш класс Notify 1
 #include "Animations/STUReloadFinishedAnimNotify.h"   // notify перезарядки
+#include "Animations/AnimUtils.h"                     // содержит шаблонную функцию поиска notify в заданном классе
 
 DEFINE_LOG_CATEGORY_STATIC(LogWeaponComponent, All, All);
+
+// глобальная переменная, количество оружия у персонажа
+constexpr static int32 WeaponNum = 2;
 
 // Sets default values for this component's properties
 USTUWeaponComponent::USTUWeaponComponent()
@@ -24,7 +28,11 @@ USTUWeaponComponent::USTUWeaponComponent()
 // Called when the game starts
 void USTUWeaponComponent::BeginPlay()
 {
+
 	Super::BeginPlay();
+
+	// проверка что у персонажа установлены обе модели оружия
+	checkf(WeaponData.Num() == WeaponNum, TEXT("Our character can hold only %i weapon items"), WeaponNum);
 
 	CurrentWeaponIndex = 0; // индекс текущего оружия в массиве Weapons
 
@@ -255,7 +263,7 @@ void USTUWeaponComponent::InitAnimations()
 	*/
 	
 	// шаблонная функция которая ищет notify 
-	auto EquipFinishedNotify = FindNotifyByClass<USTUEquipFinishedAnimNotify>(EquipAnimMontage);
+	auto EquipFinishedNotify = AnimUtils::FindNotifyByClass<USTUEquipFinishedAnimNotify>(EquipAnimMontage);
 
 	// вызываем делегат если Notify найден
 	if (EquipFinishedNotify)
@@ -263,13 +271,22 @@ void USTUWeaponComponent::InitAnimations()
 		// биндим функцию на делегат
 		EquipFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnEquipFinished);
 	}
+	else
+	{
+		UE_LOG(LogWeaponComponent, Error, TEXT("Equip anim notify is forgotten to set"));  // не установлен notify в анимации смены оружия
+		checkNoEntry();
+	}
 
 	for (auto OneWeaponData : WeaponData)
 	{
 		// шаблонная функция которая ищет notify 
-		auto ReloadFinishedNotify = FindNotifyByClass<USTUReloadFinishedAnimNotify>(OneWeaponData.ReloadAnimMontage);
+		auto ReloadFinishedNotify = AnimUtils::FindNotifyByClass<USTUReloadFinishedAnimNotify>(OneWeaponData.ReloadAnimMontage);
 		// если ничего не нашли переходим к следующему элементу
-		if (!ReloadFinishedNotify) continue;
+		if (!ReloadFinishedNotify)
+		{
+			UE_LOG(LogWeaponComponent, Error, TEXT("Reload anim notify is forgotten to set"));  // не установлен notify в анимации перезарядки оружия
+			checkNoEntry();
+		}
 
 		// биндим функцию окончания перезарядки на делегат
 		ReloadFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnReloadFinished);

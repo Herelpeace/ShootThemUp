@@ -1,5 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
-// STUHealthActorComponent.h
+// В STUHealthActorComponent.h
 
 #pragma once
 
@@ -24,6 +24,12 @@ public:
 
 	UFUNCTION(BlueprintCallable) // делаем функцию доступной в BP
 	bool isDead() const { return FMath::IsNearlyZero(Health); }; // функция вернет true когда здоровье = 0
+
+	// возвращает количество жизни. Для полосы жизни
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	float GetHealthPercent() const { return Health / MaxHealth; }
+
+
 
 	float GetHealth() const { return Health; }
 

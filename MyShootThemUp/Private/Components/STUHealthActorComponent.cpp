@@ -1,5 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
-// STUHealthActorComponent.cpp
+// В STUHealthActorComponent.cpp
 
 
 #include "Components/STUHealthActorComponent.h"
@@ -20,6 +20,8 @@ USTUHealthActorComponent::USTUHealthActorComponent()
 void USTUHealthActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	check(MaxHealth>0);  // чтобы в редакторе не выставили ноль, т.к на эту переменную происходит деление
 
 	// на старте игры или при спавне устанавливаем значение здоровья на 100
 	SetHealth(MaxHealth);  

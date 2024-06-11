@@ -4,7 +4,8 @@
 
 
 #include "UI/STUGameHUD.h"
-#include "Engine/Canvas.h"  // для получения размеров экрана, в нем происходит отрисовка 
+#include "Engine/Canvas.h"        // для получения размеров экрана, в нем происходит отрисовка 
+#include "Blueprint/UserWidget.h" // заголовочный файл виджетов
 
 void ASTUGameHUD::DrawHUD() 
 {
@@ -15,6 +16,26 @@ void ASTUGameHUD::DrawHUD()
     DrawCrossHair(); 
 
 }
+
+
+void ASTUGameHUD::BeginPlay()
+{
+    Super::BeginPlay();
+
+    auto PlayerHUDWidget = CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass);
+    // CreateWidget <>()    - шаблонная функция создания виджета
+    // UUserWidget          - тип виджета, базовый класс виджетов
+    // GetWorld()           - указатель на объект владельца, можно так же передать this
+    // PlayerHUDWidgetClass - класс виджета который хотим создать, по сути переменная в которуб записываем виджет
+
+    if (PlayerHUDWidget)
+    {
+        PlayerHUDWidget->AddToViewport();
+        // AddToViewport() - функция отрисовки, вызывается у виджета. Может принимать уровень/слой отрисовки
+    }
+}
+
+
 
 void ASTUGameHUD::DrawCrossHair() 
 {

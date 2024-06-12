@@ -13,7 +13,7 @@ void ASTUGameHUD::DrawHUD()
     Super::DrawHUD();
 
     // функция в которой находится логика отрисовки
-    DrawCrossHair(); 
+   // DrawCrossHair(); 
 
 }
 

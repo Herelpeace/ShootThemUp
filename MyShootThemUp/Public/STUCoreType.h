@@ -1,5 +1,7 @@
 #pragma once
 
+// В STUCoreType.h
+
 #include "STUCoreType.generated.h"
 // содержит заголовочные файлы структур и делегаты
 
@@ -45,6 +47,20 @@ struct FWeaponData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	UAnimMontage* ReloadAnimMontage;   // в переменной будем хранить анимацию перезарядки для данного оружия
+};
+
+// структура хранит иконки оружия и прицела
+USTRUCT(BlueprintType)
+struct FWeaponUIData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	UTexture2D* MainIcon;   // переменная для иконки оружия
+	// UTexture2D - тип данных для хранения структур
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	UTexture2D* CrossHairIcon;   // переменная для иконки прицела
 };
 
 

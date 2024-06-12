@@ -26,6 +26,8 @@ public:
     void StopFire();   // стоп стрельба мышкой 
 	void NextWeapon(); // при смене оружия
 	void Reload();     // перезарядка
+	bool GetWeaponUIData(FWeaponUIData& UIData) const; // возвращает UIData текущего оружия (внутри функции UIData присваивается значение)
+
 
 protected:
 	virtual void BeginPlay() override;

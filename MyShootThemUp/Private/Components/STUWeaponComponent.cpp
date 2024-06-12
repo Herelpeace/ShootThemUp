@@ -360,8 +360,19 @@ void USTUWeaponComponent::ChangeClip()
 
 	// выставлям флаг на время перезарядки
 	ReloadAnimProgress = true;
-	
+
 	// проигрываем анимацию перезарядки
 	PlayAnimMontage(CurrentReloadAnimMontage);
+}
 
+
+// возвращает UIData текущего оружия, внутри функции, внутреннее состояние класса не меняет
+bool USTUWeaponComponent::GetWeaponUIData(FWeaponUIData& UIData) const
+{
+	if (CurrentWeapon)
+	{
+		UIData = CurrentWeapon->GetUIData();
+		return true;
+	}
+	return false;
 }

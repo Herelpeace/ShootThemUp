@@ -30,6 +30,9 @@ public:
 
 	bool CanReload() const;  // можно ли делать перезарядку
 
+	FWeaponUIData GetUIData() const { return UIData; };
+	// функция для получения структуры с иконками оружия т.к она находится в protected секции
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
@@ -44,6 +47,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	FAmmoData DefaultAmmo {15,10,false};  // создаем объект структуры FAmmoData, заполняем его дефолтными данными
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	FWeaponUIData UIData;   // FWeaponUIData структура хранит иконки оружия и прицела
+	                        // для каждого вида оружия в БП инициализируем структуру по своему
+	
 	virtual void MakeShot();
 
 	// заполняем начальные и конечные координаты для рисуемой линии

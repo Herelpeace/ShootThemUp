@@ -5,6 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "STUCoreType.h"
 #include "STUPlayerHUDWidget.generated.h"
 
 
@@ -18,6 +19,11 @@ public:
 	// функция которую будем вызывать в БП и получать текущий уровень здоровья
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	float GetHealthPercent() const;
+
+
+	// возвращает UIData текущего оружия, будем вызывать в БП
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	bool GetWeaponUIData(FWeaponUIData& UIData) const;
 
 	
 };

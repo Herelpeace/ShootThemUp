@@ -9,6 +9,8 @@
 #include "STUPlayerHUDWidget.generated.h"
 
 
+class USTUWeaponComponent;  // forward declaration
+
 UCLASS()
 class MYSHOOTTHEMUP_API USTUPlayerHUDWidget : public UUserWidget
 {
@@ -23,7 +25,15 @@ public:
 
 	// возвращает UIData текущего оружия, будем вызывать в БП
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	bool GetWeaponUIData(FWeaponUIData& UIData) const;
+	bool GetCurrentWeaponUIData(FWeaponUIData& UIData) const;
 
+
+	// возвращает значение структуры CurrentAmmo (патроны, магазины) текущего оружия
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	bool GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const;
+
+private:
+	// т.к для виджетов нужен WeaponComponent чтобы в каждом не писать лишний код сделали общую функцию
+	USTUWeaponComponent* GetWeaponComponent() const;
 	
 };

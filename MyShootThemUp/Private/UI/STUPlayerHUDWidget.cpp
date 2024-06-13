@@ -34,13 +34,35 @@ float USTUPlayerHUDWidget::GetHealthPercent() const
 
 
 // функция для вызова в БП, возвращает структуру FWeaponUIDat содержащую иконки оружия и прицела
-bool USTUPlayerHUDWidget::GetWeaponUIData(FWeaponUIData& UIData) const
+bool USTUPlayerHUDWidget::GetCurrentWeaponUIData(FWeaponUIData& UIData) const
+{
+	// получаем указатель на weaponComponent
+	const auto WeaponComponent = GetWeaponComponent();
+
+	if (!WeaponComponent) return false;
+
+	return WeaponComponent->GetCurrentWeaponUIData(UIData);
+}
+
+
+bool USTUPlayerHUDWidget::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const
+{
+	// получаем указатель на weaponComponent
+	const auto WeaponComponent = GetWeaponComponent();
+
+	if (!WeaponComponent) return false;
+
+	return WeaponComponent->GetCurrentWeaponAmmoData(AmmoData);
+
+}
+
+USTUWeaponComponent* USTUPlayerHUDWidget::GetWeaponComponent() const
 {
 	// получаем указатель на нашего игрока
 	const auto Player = GetOwningPlayerPawn();
 	// GetOwningPlayerPawn() - функция возвращает указатель на Pawna, в виджетах
 
-	if (!Player) return false;
+	if (!Player) return nullptr;
 
 	// получаем указатель на компонент оружия
 	const auto Component = Player->GetComponentByClass(USTUWeaponComponent::StaticClass());
@@ -52,8 +74,6 @@ bool USTUPlayerHUDWidget::GetWeaponUIData(FWeaponUIData& UIData) const
 	// USTUWeaponComponent     - компонент указатель которого хотим получить
 	// Component                - UActor компонент, данного компонента
 
-	if (!WeaponComponent) return 0.0f;
+	return WeaponComponent;
 
-	return WeaponComponent->GetWeaponUIData(UIData);
 }
-

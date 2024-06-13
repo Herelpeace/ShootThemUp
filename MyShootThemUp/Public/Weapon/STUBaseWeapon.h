@@ -33,6 +33,9 @@ public:
 	FWeaponUIData GetUIData() const { return UIData; };
 	// функция для получения структуры с иконками оружия т.к она находится в protected секции
 
+	FAmmoData GetAmmoData() const { return CurrentAmmo; };
+	// функция получает данные структуры содержащей текущее количество патронов, для вывода через widget
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")

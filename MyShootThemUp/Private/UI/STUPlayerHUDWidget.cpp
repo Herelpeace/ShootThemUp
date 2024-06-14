@@ -10,21 +10,7 @@
 // функция для вызова в БП, возвращает текущее здоровье персонажа
 float USTUPlayerHUDWidget::GetHealthPercent() const
 {
-	// получаем указатель на нашего игрока
-	const auto Player = GetOwningPlayerPawn();
-	// GetOwningPlayerPawn() - функция возвращает указатель на Pawna, в виджетах
-
-	if (!Player) return 0.0f;
-
-	// получаем указатель на компонент здоровья, Health Component
-	const auto Component = Player->GetComponentByClass(USTUHealthActorComponent::StaticClass());
-	// GetComponentByClass                     - возвращает указатель на UActor компонет, принимает саб класс компонента который хотим найти
-	// USTUHealthActorComponent::StaticClass() - т.к. Health Component имеет только C++ версию, то используем данный способ                                                    
-
-	// переводим указатель из UActor в указатель конкретного компонента
-	const auto HealthComponent = Cast<USTUHealthActorComponent>(Component);
-	// USTUHealthActorComponent - компонент указатель которого хотим получить
-	// Component                - UActor компонент, данного компонента
+	const auto HealthComponent = GetHealthComponent();
 
 	if (!HealthComponent) return 0.0f;
 
@@ -75,5 +61,57 @@ USTUWeaponComponent* USTUPlayerHUDWidget::GetWeaponComponent() const
 	// Component                - UActor компонент, данного компонента
 
 	return WeaponComponent;
+}
+
+// общая функция получения HealthComponent
+USTUHealthActorComponent* USTUPlayerHUDWidget::GetHealthComponent() const
+{
+	// получаем указатель на нашего игрока
+	const auto Player = GetOwningPlayerPawn();
+	// GetOwningPlayerPawn() - функция возвращает указатель на Pawna, в виджетах
+
+	if (!Player) return nullptr;
+
+	// получаем указатель на компонент оружия
+	const auto Component = Player->GetComponentByClass(USTUHealthActorComponent::StaticClass());
+	// GetComponentByClass                     - возвращает указатель на UActor компонет, принимает саб класс компонента который хотим найти
+	// USTUWeaponComponent::StaticClass()      - т.к. WeaponComponent имеет только C++ версию, то используем данный способ                                                    
+
+	// переводим указатель из UActor в указатель конкретного компонента
+	const auto HealthComponent = Cast<USTUHealthActorComponent>(Component);
+	// USTUHealthComponent      - компонент указатель которого хотим получить
+	// Component                - UActor компонент, данного компонента
+
+	return HealthComponent;
 
 }
+
+
+// true когда персонаж жив, для виджетов
+bool USTUPlayerHUDWidget::IsPlayerAlive() const
+{
+	// получаем компонет здоровья charactera
+	const auto HealthComponent = GetHealthComponent();
+
+	return HealthComponent && !HealthComponent->isDead();
+	// проверяем на null и вызываем метод IsDead, если он false значит пероснаж жив 
+	// IsDead никогда не будет true потому что после гибели charactera контроллер перехватывает
+	// управление Pawna
+	// о том что здоровье персонажа равно 0 узнаем если HealthComponent = false
+
+}
+
+// true в режиме наблюдателя, для виджетов
+bool USTUPlayerHUDWidget::IsPlayerSpectating() const
+{
+	// получение текущего контроллкра игрока в виджетах
+	const auto Controller = GetOwningPlayer();
+
+	return Controller && Controller->GetStateName() == NAME_Spectating;
+
+	// в STUBaseCharacter после гибели персонажа мы меняем контроллер на NAME_Spectating (внтуренний unreal)
+	// в данном случае проверяем является ли имя контроллера NAME_Spectating
+
+}
+
+

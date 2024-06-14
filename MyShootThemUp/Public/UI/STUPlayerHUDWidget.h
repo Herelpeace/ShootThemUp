@@ -9,7 +9,8 @@
 #include "STUPlayerHUDWidget.generated.h"
 
 
-class USTUWeaponComponent;  // forward declaration
+class USTUWeaponComponent;        // forward declaration
+class USTUHealthActorComponent;
 
 UCLASS()
 class MYSHOOTTHEMUP_API USTUPlayerHUDWidget : public UUserWidget
@@ -22,18 +23,30 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	float GetHealthPercent() const;
 
-
 	// возвращает UIData текущего оружия, будем вызывать в БП
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	bool GetCurrentWeaponUIData(FWeaponUIData& UIData) const;
-
 
 	// возвращает значение структуры CurrentAmmo (патроны, магазины) текущего оружия
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	bool GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const;
 
+	// true когда персонаж жив, для виджетов
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	bool IsPlayerAlive() const;
+
+	// true в режиме наблюдателя, для виджетов
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	bool IsPlayerSpectating() const;
+
+
+
+
 private:
 	// т.к для виджетов нужен WeaponComponent чтобы в каждом не писать лишний код сделали общую функцию
 	USTUWeaponComponent* GetWeaponComponent() const;
+
+	// общая функция получения HealthComponent
+	USTUHealthActorComponent* GetHealthComponent() const;
 	
 };

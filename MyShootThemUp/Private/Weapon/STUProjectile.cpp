@@ -1,4 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
+// класс ракеты для оружия launcher
 // В STUProjectile.cpp
 
 

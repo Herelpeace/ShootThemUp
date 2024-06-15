@@ -181,9 +181,6 @@ void ASTUBaseWeapon::DecreaseAmmo()
 
 	CurrentAmmo.Bullets--;
 	
-	LogAmmo();
-
-
 	// меняем магазин если количество патронов в магазине равно 0 и количество патронов в арсенале не равно 0
 	// вызываем делегат
 	if (IsClipEmpty() && !IsAmmoEmpty())

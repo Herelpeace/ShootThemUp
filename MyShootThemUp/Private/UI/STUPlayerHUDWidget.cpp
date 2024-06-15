@@ -4,13 +4,15 @@
 
 #include "UI/STUPlayerHUDWidget.h"
 #include "Components/STUHealthActorComponent.h"  
-#include "Components/STUWeaponComponent.h"  
+#include "Components/STUWeaponComponent.h" 
+#include "STUUtils.h"
 
 
 // функция для вызова в БП, возвращает текущее здоровье персонажа
 float USTUPlayerHUDWidget::GetHealthPercent() const
 {
-	const auto HealthComponent = GetHealthComponent();
+	const auto HealthComponent = STUUtils::GetSTPlayerComponent<USTUHealthActorComponent>(GetOwningPlayerPawn());
+	// получаем указатель на копонент здоровья Pawna при помощи шаблонной функции
 
 	if (!HealthComponent) return 0.0f;
 
@@ -22,8 +24,8 @@ float USTUPlayerHUDWidget::GetHealthPercent() const
 // функция для вызова в БП, возвращает структуру FWeaponUIDat содержащую иконки оружия и прицела
 bool USTUPlayerHUDWidget::GetCurrentWeaponUIData(FWeaponUIData& UIData) const
 {
-	// получаем указатель на weaponComponent
-	const auto WeaponComponent = GetWeaponComponent();
+	const auto WeaponComponent = STUUtils::GetSTPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
+	// получаем указатель на копонент WeaponComponent Pawna при помощи шаблонной функции
 
 	if (!WeaponComponent) return false;
 
@@ -33,8 +35,8 @@ bool USTUPlayerHUDWidget::GetCurrentWeaponUIData(FWeaponUIData& UIData) const
 
 bool USTUPlayerHUDWidget::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const
 {
-	// получаем указатель на weaponComponent
-	const auto WeaponComponent = GetWeaponComponent();
+	const auto WeaponComponent = STUUtils::GetSTPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
+	// получаем указатель на копонент WeaponComponent Pawna при помощи шаблонной функции
 
 	if (!WeaponComponent) return false;
 
@@ -42,56 +44,12 @@ bool USTUPlayerHUDWidget::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const
 
 }
 
-USTUWeaponComponent* USTUPlayerHUDWidget::GetWeaponComponent() const
-{
-	// получаем указатель на нашего игрока
-	const auto Player = GetOwningPlayerPawn();
-	// GetOwningPlayerPawn() - функция возвращает указатель на Pawna, в виджетах
-
-	if (!Player) return nullptr;
-
-	// получаем указатель на компонент оружия
-	const auto Component = Player->GetComponentByClass(USTUWeaponComponent::StaticClass());
-	// GetComponentByClass                     - возвращает указатель на UActor компонет, принимает саб класс компонента который хотим найти
-	// USTUWeaponComponent::StaticClass()      - т.к. WeaponComponent имеет только C++ версию, то используем данный способ                                                    
-
-	// переводим указатель из UActor в указатель конкретного компонента
-	const auto WeaponComponent = Cast<USTUWeaponComponent>(Component);
-	// USTUWeaponComponent     - компонент указатель которого хотим получить
-	// Component                - UActor компонент, данного компонента
-
-	return WeaponComponent;
-}
-
-// общая функция получения HealthComponent
-USTUHealthActorComponent* USTUPlayerHUDWidget::GetHealthComponent() const
-{
-	// получаем указатель на нашего игрока
-	const auto Player = GetOwningPlayerPawn();
-	// GetOwningPlayerPawn() - функция возвращает указатель на Pawna, в виджетах
-
-	if (!Player) return nullptr;
-
-	// получаем указатель на компонент оружия
-	const auto Component = Player->GetComponentByClass(USTUHealthActorComponent::StaticClass());
-	// GetComponentByClass                     - возвращает указатель на UActor компонет, принимает саб класс компонента который хотим найти
-	// USTUWeaponComponent::StaticClass()      - т.к. WeaponComponent имеет только C++ версию, то используем данный способ                                                    
-
-	// переводим указатель из UActor в указатель конкретного компонента
-	const auto HealthComponent = Cast<USTUHealthActorComponent>(Component);
-	// USTUHealthComponent      - компонент указатель которого хотим получить
-	// Component                - UActor компонент, данного компонента
-
-	return HealthComponent;
-
-}
-
 
 // true когда персонаж жив, для виджетов
 bool USTUPlayerHUDWidget::IsPlayerAlive() const
 {
-	// получаем компонет здоровья charactera
-	const auto HealthComponent = GetHealthComponent();
+	const auto HealthComponent = STUUtils::GetSTPlayerComponent<USTUHealthActorComponent>(GetOwningPlayerPawn());
+	// получаем указатель на копонент здоровья Pawna при помощи шаблонной функции
 
 	return HealthComponent && !HealthComponent->isDead();
 	// проверяем на null и вызываем метод IsDead, если он false значит пероснаж жив 

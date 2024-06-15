@@ -9,9 +9,6 @@
 #include "STUPlayerHUDWidget.generated.h"
 
 
-class USTUWeaponComponent;        // forward declaration
-class USTUHealthActorComponent;
-
 UCLASS()
 class MYSHOOTTHEMUP_API USTUPlayerHUDWidget : public UUserWidget
 {
@@ -39,14 +36,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	bool IsPlayerSpectating() const;
 
-
-
-
-private:
-	// т.к для виджетов нужен WeaponComponent чтобы в каждом не писать лишний код сделали общую функцию
-	USTUWeaponComponent* GetWeaponComponent() const;
-
-	// общая функция получения HealthComponent
-	USTUHealthActorComponent* GetHealthComponent() const;
 	
 };

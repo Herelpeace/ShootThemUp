@@ -32,11 +32,17 @@ void ASTUBasePickup::BeginPlay()
 	Super::BeginPlay();	
 
 	check(CollisionComponent);
+
+	// генерируем случайный угол вращения
+	GenerateRataionYaw();
 }
 
 void ASTUBasePickup::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// задает вращение в локальных координатах
+	AddActorLocalRotation(FRotator(0.0f, RatationYaw,0.0f));
 }
 
 // вызывается при срабатывании события overlap на акторе (переопределена)
@@ -47,9 +53,9 @@ void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
 	// получаем указатель на Pawn актора OtherActor
 	const auto Pawn = Cast<APawn>(OtherActor);
 	
-	
+	// по сути определяем брать ли pickup
 	if (GivePickupTo(Pawn))  // у базового класса GivePickupTo(Pawn) всегда возвращает false
-	{
+	{                        // у наследников после измнения значения компонента возвращают true
 		// скрываем объект
 		PickupWasTaken();
 	}
@@ -62,7 +68,7 @@ bool ASTUBasePickup::GivePickupTo(APawn* PlayerPawn)
 	return false;
 }
 
-// вызывается псле взятия объекта, скрываем объект
+// вызывается после взятия объекта, скрываем объект
 void ASTUBasePickup::PickupWasTaken()
 {
 	// отключаем коллизию, коллизия перестает взаимодейстовать с объектами
@@ -87,6 +93,9 @@ void ASTUBasePickup::PickupWasTaken()
 // вызывается по срабатываению таймера респавна, делаем актор видимым
 void ASTUBasePickup::Respawn()
 {
+	// генерируем случайный угол вращения
+	GenerateRataionYaw();
+
 	// включаем взимодействие коллизии с объектами
 	CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
@@ -95,6 +104,15 @@ void ASTUBasePickup::Respawn()
 		GetRootComponent()->SetVisibility(true, true);
 		// делаем объект видимым
 	}
+
+}
+
+// функция вычиляет рандомный угол вращения
+void ASTUBasePickup::GenerateRataionYaw()
+{
+	const auto Direction = FMath::RandBool() ? 1.0f : -1.0f;
+	RatationYaw = FMath::RandRange(1.0f, 5.0f)*Direction;
+	//FMath::RandRange (n1, n2) - возвращает рандомное число между n1 и n 2
 
 }
 

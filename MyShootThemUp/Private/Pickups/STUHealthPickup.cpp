@@ -3,13 +3,20 @@
 
 
 #include "Pickups/STUHealthPickup.h"
+#include "STUHealthActorComponent.h"
+#include "STUUtils.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogHealthPickup, All, All);
 
 // для классов наследников
 bool ASTUHealthPickup::GivePickupTo(APawn* PlayerPawn)
 {
-	UE_LOG(LogHealthPickup, Warning, TEXT(" Health was taken"));
-	return true;
+	// шаблонная функция возвращает указатель на компонет персонажа (HealthComponent, WeaponComponent)
+    // принимает указатель на Pawn
+	const auto HealthComponent = STUUtils::GetSTPlayerComponent<USTUHealthActorComponent>(PlayerPawn);
+
+	if (!HealthComponent) return false;
+
+	return HealthComponent->TryToAddHealth(HealthAmount);
 }
 

@@ -29,9 +29,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	float GetHealthPercent() const { return Health / MaxHealth; }
 
-
-
 	float GetHealth() const { return Health; }
+
+	// добавляет здоровье при подборе
+	bool TryToAddHealth(float HealthAmount);
+
+	// true - здоровье максимум
+	bool IsHealthFull() const;
+
 
 protected:
 
@@ -71,7 +76,5 @@ private:
 
 	// функция установки здоровья
 	void SetHealth(float NewHealth);
-
-
 		
 };

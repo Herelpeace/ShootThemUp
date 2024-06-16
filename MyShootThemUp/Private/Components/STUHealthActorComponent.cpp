@@ -83,8 +83,8 @@ void USTUHealthActorComponent::HealUpdate()
 	SetHealth(Health + HealModifier);
 
 	// останавливаем таймер когда здоровье достигло максимума
-	// проверяем чтобы здоровье не стало больше максимального, проверка мира на null
-	if (FMath::IsNearlyEqual(Health,MaxHealth) && GetWorld())
+	// проверяем равно ли здоровье максимальному, проверка мира на null
+	if (IsHealthFull() && GetWorld())
 	{
 		// функция остановки таймера
 	    GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
@@ -100,6 +100,24 @@ void USTUHealthActorComponent::SetHealth(float NewHealth)
 
 	// каждый раз при изменении здоровья вызываем делегат
 	OnHealthChanged.Broadcast(Health);
+}
+
+// добавляет здоровье при подборе
+bool USTUHealthActorComponent::TryToAddHealth(float HealthAmount)
+{
+	// либо dead либо полное здоровье, то ничего не прибавляем, выходим
+	if (isDead() || IsHealthFull()) return false;
+
+	SetHealth(Health+ HealthAmount);
+
+	return true;
+}
+
+// true - здоровье максимум
+bool USTUHealthActorComponent::IsHealthFull() const
+{
+	// проверят равны ли между собой переменные Health и MaxHealth
+	return FMath::IsNearlyEqual(Health, MaxHealth);
 }
 
 

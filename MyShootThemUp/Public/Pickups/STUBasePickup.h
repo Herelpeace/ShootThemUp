@@ -36,14 +36,20 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+
+	// угол вращения объекта
+	float RatationYaw = 0.0f;
+
 	// для классов наследников
 	virtual bool GivePickupTo(APawn* PlayerPawn);
 	// true   - подобрали объект, false - объект не взят
 	// APawn* - указатель на Pawn, через него полуачаем доступ к компонентам здоровья и оружия
 	
-
 	void PickupWasTaken();  // вызывается псле взятия объекта, скрываем объект
 	void Respawn();         // вызывается по срабатываению таймера респавна, делаем актор видимым
+
+	// функция вычиляет рандомный угол вращения
+	void GenerateRataionYaw();
 		 
 
 };

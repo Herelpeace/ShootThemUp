@@ -36,6 +36,9 @@ public:
 	FAmmoData GetAmmoData() const { return CurrentAmmo; };
 	// функция получает данные структуры содержащей текущее количество патронов, для вывода через widget
 
+	bool TryToAddAmmo(int32 ClipsAmount);
+	// добавляет патроны в магазин, общая для наследников
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
@@ -81,6 +84,9 @@ protected:
 
 	// true когда текущий магазин пустой
 	bool IsClipEmpty() const;
+
+	//  true -  магазин полный
+	bool IsAmmoFull() const;
 
 	// выводит состояние аммуниции в консоль
 	void LogAmmo();

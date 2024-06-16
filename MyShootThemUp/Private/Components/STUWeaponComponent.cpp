@@ -17,11 +17,8 @@ constexpr static int32 WeaponNum = 2;
 // Sets default values for this component's properties
 USTUWeaponComponent::USTUWeaponComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
 }
 
 
@@ -314,7 +311,6 @@ void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComponent
 	ReloadAnimProgress = false;
 }
 
-
 // вернет true когда можно стрелять
 bool USTUWeaponComponent::CanFire() const
 {
@@ -343,9 +339,28 @@ void USTUWeaponComponent::Reload()
 }
 
 // перезарадка по делегату, callback на делегат OnClipEmpty
-void USTUWeaponComponent::OnEmptyClip()
+void USTUWeaponComponent::OnEmptyClip(ASTUBaseWeapon* AmmoEmptyWeapon)
 {
-	ChangeClip();
+	if (!AmmoEmptyWeapon) return;
+
+	// если оружие в руках требует перезарядки
+	if (CurrentWeapon == AmmoEmptyWeapon)
+	{
+		ChangeClip();
+	}
+	else
+	{
+		// если оружие за спиной, требует перезарядки, подобрали патроны
+		for (const auto Weapon:Weapons)
+		{
+			if (Weapon == AmmoEmptyWeapon)
+			{
+				Weapon->ChangeClip();
+			}
+		}
+
+	}
+	
 }
 
 // вся логика перезарядки находится в этой функции
@@ -364,7 +379,6 @@ void USTUWeaponComponent::ChangeClip()
 	// проигрываем анимацию перезарядки
 	PlayAnimMontage(CurrentReloadAnimMontage);
 }
-
 
 // возвращает UIData текущего оружия, внутри функции, внутреннее состояние класса не меняет
 bool USTUWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& UIData) const
@@ -386,4 +400,24 @@ bool USTUWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const
 		return true;
 	}
 	return false;
+}
+
+// добавляем магазины, возвращает bool
+bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, int32 ClipsAmount)
+{
+	for (const auto Weapon:Weapons)
+	{
+		if (Weapon && Weapon->IsA(WeaponType))
+		{
+			// у элемента Weapon массива TArray<ASTUBaseWeapon* > Weapons вызываем функцию IsA()
+			// isA  - true если принимаемый объект того же типа что и элемент массива
+
+			// у элемента массива TArray<ASTUBaseWeapon* > Weapons вызываем функцию TryToAddAmmo(), передаем кол-во магазинов
+			return Weapon->TryToAddAmmo(ClipsAmount);
+
+		}
+	}
+	// если в массиве нет нашего оружия
+	return false;
+
 }

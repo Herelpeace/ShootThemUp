@@ -14,7 +14,7 @@ class MYSHOOTTHEMUP_API ASTUHealthPickup : public ASTUBasePickup
 	GENERATED_BODY()
 private:
 	// для классов наследников
-	virtual bool GivePickupTo(APawn* Playerpawn) override;
+	virtual bool GivePickupTo(APawn* PlayerPawn) override;
 	// true   - подобрали объект, false - объект не взят
 	// APawn* - указатель на Pawn, через него полуачаем доступ к компонентам здоровья и оружия
 	

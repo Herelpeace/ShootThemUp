@@ -57,7 +57,7 @@ void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
 }
 
 // переопределяем в наследниках,если подобрали объект, меняет значения у Charactera
-bool ASTUBasePickup::GivePickupTo(APawn* Playerpawn)
+bool ASTUBasePickup::GivePickupTo(APawn* PlayerPawn)
 {
 	return false;
 }

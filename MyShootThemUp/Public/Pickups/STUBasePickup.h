@@ -37,7 +37,7 @@ public:
 
 private:
 	// для классов наследников
-	virtual bool GivePickupTo(APawn* Playerpawn);
+	virtual bool GivePickupTo(APawn* PlayerPawn);
 	// true   - подобрали объект, false - объект не взят
 	// APawn* - указатель на Pawn, через него полуачаем доступ к компонентам здоровья и оружия
 	

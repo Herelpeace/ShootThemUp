@@ -28,7 +28,7 @@ public:
 	void Reload();     // перезарядка
 	bool GetCurrentWeaponUIData(FWeaponUIData& UIData) const; // возвращает UIData текущего оружия (внутри функции UIData присваивается значение)
 	bool GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const; // возвращает структуру CurrentAmmo (внутри функции AmmoData присваивается значение)
-
+	bool TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, int32 ClipsAmount); // добавляем магазины, возвращает bool
 
 protected:
 	virtual void BeginPlay() override;
@@ -103,8 +103,8 @@ private:
 	// вернет true когда можно перезаряжаться
 	bool CanReload() const;
 
-	// callback на делегат OnClipEmpty
-	void OnEmptyClip();
+	// callback на делегат OnClipEmpty, передаем указатель на оружие требующее перезарядки
+	void OnEmptyClip( ASTUBaseWeapon* AmmoEmptyWeapon);
 
 	// вся логика перезарядки находится в этой функции
 	void ChangeClip();

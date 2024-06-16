@@ -9,7 +9,8 @@ class ASTUBaseWeapon;  // forward declaration
 
 // для STUBaseWeapon
 // делегат оповещает WeaponComponent о том что закончились патроны
-DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature)
+// при вызове делегата передаем указатель на оружие которе запрашиват перезарядку
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnClipEmptySignature, ASTUBaseWeapon*)
 
 
 // для STUBaseWeapon

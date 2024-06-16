@@ -188,7 +188,7 @@ void ASTUBaseWeapon::DecreaseAmmo()
 		// останавливаем стрельбу
 		StopFire();
 		// вызываем делегат 
-		OnClipEmpty.Broadcast();
+		OnClipEmpty.Broadcast(this);
 	}
 	// делаем выстрел, запускаем таймер, отнимаем 1 патрон, вызываем делегат, после чего запускается перезарядка 
 	// (если количество пуль = 0), перезарядка сразу задает новое кличество патронов и к моменту срабатыавния таймера
@@ -256,3 +256,58 @@ void ASTUBaseWeapon::LogAmmo()
 
 }
 
+// true -  магазин полный
+bool ASTUBaseWeapon::IsAmmoFull() const
+{
+	return CurrentAmmo.Clips == DefaultAmmo.Clips &&
+		CurrentAmmo.Bullets == DefaultAmmo.Bullets;
+
+}
+
+// добавляет патроны в магазин, общая для наследников
+bool  ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
+{
+	// если патроны бесконечны, полная аммуниция, или подняли 0 магазинов
+	if (CurrentAmmo.Infinite || IsAmmoFull() || ClipsAmount <= 0) return false;
+
+	// патроны = 0, магазины = 0
+	if (IsAmmoEmpty())
+	{
+		UE_LOG(LogBaseWeapon, Warning, TEXT(" Ammo was empty"));
+		CurrentAmmo.Clips = FMath::Clamp(CurrentAmmo.Clips + ClipsAmount, 0, DefaultAmmo.Clips + 1);
+		// CurrentAmmo.Clips + ClipsAmount - получившееся число магазинов
+		// 0                     - нижняя граница магазинов
+		// DefaultAmmo.Clips + 1 - верхняя граница магазинов
+
+		// перезаряжаем, делегат перезарядки
+		OnClipEmpty.Broadcast(this);
+	}
+	else 
+    // количество магазинов меньше максимального
+	if (CurrentAmmo.Clips<DefaultAmmo.Clips)
+	{
+		// сохраняем в переменную общее количество патронов
+		const auto NextClipsAmount = CurrentAmmo.Clips + ClipsAmount;
+
+		// если подобрано магазинов меньше максимально возможного
+		if (DefaultAmmo.Clips - NextClipsAmount >=0)
+		{
+			CurrentAmmo.Clips = NextClipsAmount;
+			UE_LOG(LogBaseWeapon, Warning, TEXT(" Clips were added"));
+		}
+		else
+		{
+			CurrentAmmo.Clips = DefaultAmmo.Clips;
+			CurrentAmmo.Bullets = DefaultAmmo.Bullets;
+			UE_LOG(LogBaseWeapon, Warning, TEXT(" Ammo is full"));
+		}
+
+	}
+	else // количество магазинов = максимальному но патроны использованы
+	{
+		CurrentAmmo.Bullets = DefaultAmmo.Bullets;
+		UE_LOG(LogBaseWeapon, Warning, TEXT(" Bullets were added"));
+	}
+	return true;
+
+}

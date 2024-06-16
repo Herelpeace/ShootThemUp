@@ -4,3 +4,12 @@
 
 #include "Pickups/STUHealthPickup.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogHealthPickup, All, All);
+
+// для классов наследников
+bool ASTUHealthPickup::GivePickupTo(APawn* Playerpawn)
+{
+	UE_LOG(LogHealthPickup, Warning, TEXT(" Health was taken"));
+	return true;
+}
+

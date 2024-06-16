@@ -25,13 +25,13 @@ ASTUBasePickup::ASTUBasePickup()
 	// при overlap будет вызвана функция NotifyActorBeginOverlap() которую нужно переопределить
 
 	SetRootComponent(CollisionComponent);
-
 }
 
 void ASTUBasePickup::BeginPlay()
 {
-	Super::BeginPlay();
-	
+	Super::BeginPlay();	
+
+	check(CollisionComponent);
 }
 
 void ASTUBasePickup::Tick(float DeltaTime)
@@ -44,9 +44,57 @@ void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	UE_LOG(LogBasePickup, Warning, TEXT(" Pickup was taken "));
+	// получаем указатель на Pawn актора OtherActor
+	const auto Pawn = Cast<APawn>(OtherActor);
 	
-	// удаляем компонент сферы
-	Destroy();
+	
+	if (GivePickupTo(Pawn))  // у базового класса GivePickupTo(Pawn) всегда возвращает false
+	{
+		// скрываем объект
+		PickupWasTaken();
+	}
+
+}
+
+// переопределяем в наследниках,если подобрали объект, меняет значения у Charactera
+bool ASTUBasePickup::GivePickupTo(APawn* Playerpawn)
+{
+	return false;
+}
+
+// вызывается псле взятия объекта, скрываем объект
+void ASTUBasePickup::PickupWasTaken()
+{
+	// отключаем коллизию, коллизия перестает взаимодейстовать с объектами
+	CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+	if (GetRootComponent())
+	{
+		GetRootComponent()->SetVisibility(false, true);
+		// GetRootComponent()->SetVisibility() - задать видимость у корневого компонента актора, по сути видим актор или нет
+		// false                               - видим компонент или нет
+		// true                                - приминить новое значение Visibility к дочерним компонентам
+	}
+
+	FTimerHandle RespawnTimerHandle;  // создаем переменную таймера
+	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ASTUBasePickup::Respawn, RespawnTime);
+	// RespawnTimerHandle      - переменная таймера
+	// this                    - объект у которого вызываем таймер
+	// ASTUBasePickup::Respawn - функция вызываемая при срабатывании таймера
+	// RespawnTime             - время через которое будет вызвана функция ASTUBasePickup::Respawn
+}
+
+// вызывается по срабатываению таймера респавна, делаем актор видимым
+void ASTUBasePickup::Respawn()
+{
+	// включаем взимодействие коллизии с объектами
+	CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+	if (GetRootComponent())
+	{
+		GetRootComponent()->SetVisibility(true, true);
+		// делаем объект видимым
+	}
+
 }
 

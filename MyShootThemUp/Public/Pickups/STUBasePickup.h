@@ -19,8 +19,11 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Pickup")
-	USphereComponent* CollisionComponent;
-	// коллизия сферы
+	USphereComponent* CollisionComponent;  // коллизия сферы
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+	float RespawnTime = 5.0f;  // время респавна после взятия объекта
+	
 
 	virtual void BeginPlay() override;
 	
@@ -31,5 +34,16 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	// для классов наследников
+	virtual bool GivePickupTo(APawn* Playerpawn);
+	// true   - подобрали объект, false - объект не взят
+	// APawn* - указатель на Pawn, через него полуачаем доступ к компонентам здоровья и оружия
+	
+
+	void PickupWasTaken();  // вызывается псле взятия объекта, скрываем объект
+	void Respawn();         // вызывается по срабатываению таймера респавна, делаем актор видимым
+		 
 
 };

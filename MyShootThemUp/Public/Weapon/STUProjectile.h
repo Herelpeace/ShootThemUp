@@ -1,4 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
+// класс ракеты для Launchera 
 // В STUProjectile.h
 
 #pragma once
@@ -9,6 +10,7 @@
 
 class USphereComponent;    // forward declaration
 class UProjectileMovementComponent; // forward declaration
+class USTUWeaponFXComponent;
 
 UCLASS()
 class MYSHOOTTHEMUP_API ASTUProjectile : public AActor
@@ -31,6 +33,9 @@ protected:
 	// схож с CharacterMovementComponent
 	// можно сделать самонаводящийся актор
 	// сделать разное количество отскоков при столкновении с другими объектами
+
+	UPROPERTY(VisibleAnywhere, Category = "VFX")
+	USTUWeaponFXComponent* WeaponFXComponent;    // выбираем FX в редакторе БП ракеты для гранатомета
 
 	// радиус поражения
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon");

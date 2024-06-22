@@ -5,6 +5,21 @@
 #include "Weapon/STURifleWeapon.h"
 #include "Engine/World.h"                        // 
 #include "DrawDebugHelpers.h"                    // дли рисования линий (Line Trace)
+#include "Weapon/Components/STUWeaponFXComponent.h"
+
+
+ASTURifleWeapon::ASTURifleWeapon()  // конструктор класса ASTURifleWeapon, нужен для создания компонета STUWeaponFXComponent
+{
+	// в переменную FX компонета записываем компонент USTUWeaponFXComponent
+	WeaponFXComponent = CreateDefaultSubobject<USTUWeaponFXComponent>("WeaponFXComponent");
+}
+
+void ASTURifleWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	check(WeaponFXComponent);   // drbug проверка компонента на null
+}
 
 // функция бинда кнопки мышки, вызывается из Charactera до тех пор пока кнопка мышки не отпущена
 // начало стрельбы
@@ -76,7 +91,7 @@ void ASTURifleWeapon::MakeShot()
 		// функция отрисовки линии,пердаем коодинаты в виде переменных (без нашей функции, рефакторинга)
 		//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 3.0f, 0, 3.0f);
 
-		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Green, false, 3.0f, 0, 3.0f);
+		//DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Green, false, 3.0f, 0, 3.0f);
 
 		// GetWorld()    - указатель на мир
 		// TraceStart    - координаты откуда начинается линия
@@ -92,7 +107,7 @@ void ASTURifleWeapon::MakeShot()
 
 
 		// рисуем сферу в месте пересечения
-		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24.0f, FColor::Green, false, 5.0f);
+		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24.0f, FColor::Green, false, 5.0f);
 
 		// GetWorld()            - указатель на мир
 		// HitResult.ImpactPoint - центр сферы, координаты в которых рисуем сферу, берем координаты точки пересечения
@@ -103,6 +118,10 @@ void ASTURifleWeapon::MakeShot()
 		// 5.0f                  - время отображения сферы секунд
 
 		// UE_LOG(LogBaseWeapon, Warning, TEXT(" Bone: %s "), *HitResult.BoneName.ToString());
+
+		WeaponFXComponent->PlayImpactFX(HitResult);
+		// вызываем функцию проигрвания FX, передаем Hit объект (информацию об столкновении)
+
 	}
 	else
 	{

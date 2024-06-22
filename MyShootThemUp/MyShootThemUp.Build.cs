@@ -9,7 +9,7 @@ public class MyShootThemUp : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Niagara" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
@@ -20,7 +20,8 @@ public class MyShootThemUp : ModuleRules
           "MyShootThemUp/Public/Weapon",
           "MyShootThemUp/Public/UI",
           "MyShootThemUp/Public/Animations",
-          "MyShootThemUp/Public/Pickups"
+          "MyShootThemUp/Public/Pickups",
+          "MyShootThemUp/Public/Weapon/Components"
         });       // Директории до h файлов проекта
 
 		// Uncomment if you are using Slate UI

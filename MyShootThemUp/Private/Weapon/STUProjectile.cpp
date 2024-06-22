@@ -8,6 +8,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "Weapon/Components/STUWeaponFXComponent.h"
 
 
 ASTUProjectile::ASTUProjectile()
@@ -33,6 +34,8 @@ ASTUProjectile::ASTUProjectile()
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
 	MovementComponent->InitialSpeed = 2000.0f;          // задаем скорость по умолчанию
 	MovementComponent->ProjectileGravityScale = 0.0f;   // гравитация действующая на актора при движении
+
+	WeaponFXComponent = CreateDefaultSubobject<USTUWeaponFXComponent>("WeaponFXComponent");
 }
 
 
@@ -42,6 +45,7 @@ void ASTUProjectile::BeginPlay()
 
 	check(MovementComponent);
 	check(CollisionComponent);
+	check(WeaponFXComponent);
 
 	// задаем скорость ракете
 	// единичный вектор навправления умножаем на значение в поле InitialSpeed у MovementComponent
@@ -85,6 +89,10 @@ void ASTUProjectile::OnProjectileHit( UPrimitiveComponent* HitComponent, AActor*
 
 	// отображаем сферу урона
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Green, false, 5.0f);
+
+	WeaponFXComponent->PlayImpactFX(Hit);
+	// вызываем функцию проигрвания FX, передаем Hit объект (информацию об столкновении)
+	// const FHitResult& Hit
 
 	// удаляем актор при столкновении
 	Destroy();

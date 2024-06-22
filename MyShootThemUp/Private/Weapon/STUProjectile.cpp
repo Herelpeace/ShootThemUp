@@ -28,6 +28,10 @@ ASTUProjectile::ASTUProjectile()
 	// одинакова€ реакци€ дл€ всех каналов, при взаимодействии ракета будет заблокирована в точке столкновени€
 	CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 
+	// при столкновении коллизии получаем информацию о столкновении
+	// bReturnMaterialOnMove - позвол€ет включить информацию о физическом материале
+	CollisionComponent->bReturnMaterialOnMove = true;
+
 	SetRootComponent(CollisionComponent);
 
 	// компонент скорости дл€ акторов (дл€ ракеты)

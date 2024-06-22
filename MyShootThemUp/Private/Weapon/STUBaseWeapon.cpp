@@ -37,28 +37,21 @@ void ASTUBaseWeapon::BeginPlay()
 	CurrentAmmo = DefaultAmmo;
 }
 
-// функция бинда кнопки мышки, вызывается из Charactera до тех пор пока кнопка мышки не отпущена
+// override функция бинда кнопки мышки, вызывается из Charactera до тех пор пока кнопка мышки не отпущена
 // начало стрельбы
 void ASTUBaseWeapon::StartFire() 
-{
-
-}
+{}
 
 
-// функция бинда кнопки мышки, вызывается из Charactera, вызывается после того как отпустили кнопку мышки
+// override функция бинда кнопки мышки, вызывается из Charactera, вызывается после того как отпустили кнопку мышки
 // конец стрельбы
 void ASTUBaseWeapon::StopFire()
-{
-
-}
+{}
 
 
-
-// функция содержит всю логику выстрела
+// override функция содержит всю логику выстрела
 void ASTUBaseWeapon::MakeShot() 
-{
-
-}
+{}
 // MakeShot() 
 
 
@@ -149,6 +142,7 @@ void ASTUBaseWeapon::MakeHit( FHitResult& HitResult, const FVector& TraceStart, 
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetOwner()); // заполняем поле AddIgnoredActor()
+	CollisionParams.bReturnPhysicalMaterial = true;  // разрешить получать физический материал
 
 	// FCollisionQueryParams - структура в которой можно указать игнорируемые компоненты или акторы
 	// AddIgnoredActor()     - актор которого нужно игнорировать, нужно чтобы игрок не попадал сам в себя при стрельбе

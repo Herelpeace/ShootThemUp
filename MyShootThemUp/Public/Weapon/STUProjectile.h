@@ -34,7 +34,7 @@ protected:
 	// можно сделать самонаводящийся актор
 	// сделать разное количество отскоков при столкновении с другими объектами
 
-	UPROPERTY(VisibleAnywhere, Category = "VFX")
+	UPROPERTY(VisibleAnywhere, Category = "VFX") // создается раздел VFX в котором появляются поля заданные в USTUWeaponFXComponent
 	USTUWeaponFXComponent* WeaponFXComponent;    // выбираем FX в редакторе БП ракеты для гранатомета
 
 	// радиус поражения

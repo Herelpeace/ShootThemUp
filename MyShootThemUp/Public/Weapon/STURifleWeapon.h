@@ -31,7 +31,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DamageAmount = 10.0f;       // Damage наносимый актору
 
-	UPROPERTY(VisibleAnywhere, Category = "VFX")
+	UPROPERTY(VisibleAnywhere, Category = "VFX") // создается раздел VFX в котором появляются поля заданные в USTUWeaponFXComponent
 	USTUWeaponFXComponent* WeaponFXComponent;     // выбираем FX в редакторе БП винтовки
 
 	virtual void MakeShot() override;  // переопределяем функция логики стрельбы

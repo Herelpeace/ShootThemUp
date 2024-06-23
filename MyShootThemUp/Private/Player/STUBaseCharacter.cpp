@@ -66,7 +66,8 @@ void ASTUBaseCharacter::BeginPlay()
 	check(HealthComponent) // проверка что объекты созданы и существуют
 	check(HealthTextComponent) // макросы работают только во время отладки, в shipinge они игнорируются
 	check(GetCharacterMovement()) // проверка что CharacterMovement не null
-    check(WeaponComponent)
+	check(WeaponComponent)
+	check(GetMesh());
 
     // т.к сначала вызвается BeginPlay у компонентов, а затем у Character,нам нужно отобразить здоровье заранее до делегата
 	OnHealthChanged(HealthComponent->GetHealth());
@@ -219,7 +220,7 @@ void ASTUBaseCharacter::OnDeath()
 {
 	UE_LOG(LogBaseCharacter, Display, TEXT(" Player %s is dead!!!"), *GetName());
 
-	PlayAnimMontage(DeathAnimMontage);   // фунция для проигрывания AnimMontage
+	//PlayAnimMontage(DeathAnimMontage);   // фунция для проигрывания AnimMontage
 	// DeathAnimMontage - указатель на анимацию которую нужно проиграть. Можно не проверять на null, проверка есть внутри Unreal
 
 	// остановить движение персонажа
@@ -243,6 +244,12 @@ void ASTUBaseCharacter::OnDeath()
 	// ECollisionResponse                - enum содержащий основные параметры коллизий ECR_Ignore, ECR_Overlap, ECR_Block
 
 	WeaponComponent->StopFire();
+
+	// получаем указатель на мэш, включаем коллизию
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	// включить физическую симуляцию тела
+	GetMesh()->SetSimulatePhysics(true);
 }
 // OnDeath()
 

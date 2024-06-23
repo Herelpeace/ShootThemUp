@@ -75,3 +75,49 @@ DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
 // создаем делегат с 1 параметром, имя FOnHealthChanged, тип параметров float
 // вызываем делегат когда происходит изменение Health
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float);
+
+
+// VFX
+
+class UNiagaraSystem; 
+
+// храним настроки для текущей декали
+USTRUCT(BlueprintType)
+struct FDecalData
+{
+	GENERATED_USTRUCT_BODY()
+
+	// материал декали
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+	UMaterialInterface* Material;
+
+	// размер декали
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+	FVector Size = FVector(10.0f);
+	// FVector(10.0f) - конструктор, инициализирует все компоненты FVectora одним значением
+
+	// время жизни декали
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+	float LifeTime = 5.0f;
+
+	// время за которое декаль будет растворяться (становиться прозрачной)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+	float FadeOutTime = 0.7f;
+
+};
+
+// объединяет niagara эффект и декаль
+USTRUCT(BlueprintType)
+struct FImpactData
+{
+	GENERATED_USTRUCT_BODY()
+
+	// указатель на niagara систему
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+	UNiagaraSystem* NiagaraEffect;
+
+	// cтруктура с настройками декали
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+	FDecalData DecalData;
+
+};

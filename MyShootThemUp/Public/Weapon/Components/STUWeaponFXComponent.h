@@ -5,6 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "STUCoreType.h"
 #include "STUWeaponFXComponent.generated.h"
 
 class UNiagaraSystem; // forward declaration
@@ -24,14 +25,12 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")  // будет поле в котором можно выбрать эффект
-	UNiagaraSystem* DefaultEffect;  // для эффекта ниагары, спавним когда попали в объект у которого не можем определить физический материал
+	FImpactData DefaultImpactData;  // дефолтный эффект содержит как niagarу так и декаль
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-	TMap<UPhysicalMaterial*, UNiagaraSystem* > EffectsMap;      // отображается как массив в котором выбираем пару материал - эффект к нему
+	TMap<UPhysicalMaterial*, FImpactData > ImpactDataMap;      // отображается как массив в котором выбираем: материал - эффект и декаль к нему
 
 	// TMap - Ассоциативный контейнер, принимает типы котрые хотим в нем хранить 
 	// хранит их в виде комбинации ключа и значения т.е какому то ключу соответствует значение 
 	// В качестве ключа используем физический материал, а в качестве значения niagara систему
-
-
 };

@@ -4,8 +4,11 @@
 
 #include "Components/STUHealthActorComponent.h"
 #include "GameFramework/Actor.h"                // для получения ссылки на Actora которому принадлежит данный класс
+#include "GameFramework/Pawn.h"
+#include "GameFramework/Controller.h"
 #include "Engine/World.h"   // чтобы получать ссылку на мир, ТаймерМенеджер находится в объекте мира
 #include "TimerManager.h"   // для таймера
+#include "Camera/CameraShakeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogHealthComponent,All, All);
 
@@ -71,8 +74,9 @@ void USTUHealthActorComponent::OnTakeAnyDamage(
 		// HealUpdateTime                        - частота обновления таймера
 		// true                                  - вызывается ли таймер повторно
 		// HealDelay                             - задержка перед первым вызовом
-	}   
-	     
+	}  
+
+	PlayCameraShakee();  // тряска камеры	     
 
 }
 // OnTakeAnyDamageHandle функция урона
@@ -121,5 +125,27 @@ bool USTUHealthActorComponent::IsHealthFull() const
 }
 
 
+// проигрывание эффекта тряски
+void USTUHealthActorComponent::PlayCameraShakee()
+{
+	if (isDead()) return;
+
+	// получаем указатель на Pawn
+	const auto Player = Cast<APawn>(GetOwner());
+	// делаем Cast указателя который возвращает GetOwner() к классу Pawn
+	// указатель на контроллер находится в Pawn, поэтому нет смысла кастить до Charactera
+
+	if (!Player) return;
+
+	// получаем указатель на контроллер
+	const auto Controller = Player->GetController<APlayerController>();
+
+	if (!Controller || !Controller->PlayerCameraManager) return;
+
+
+	// вызываем эффект тряски, передаем в функцию переменную типа UCameraShakeBase
+	Controller->PlayerCameraManager->StartCameraShake(CameraShake);
+
+}
 
 

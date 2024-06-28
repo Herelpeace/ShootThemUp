@@ -36,5 +36,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	bool IsPlayerSpectating() const;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	void OnTakeDamage(); // Event функция для вызова в БП, event срабатывает каждый раз при изменении здоровья
+
+	virtual bool Initialize() override;  // подписываемся на делегат OnHealthChanged (float Health)
+
+private:
+	void OnHealthChanged(float Health, float HealthDelta );  // для бинда на делегат Health компонента
 	
 };

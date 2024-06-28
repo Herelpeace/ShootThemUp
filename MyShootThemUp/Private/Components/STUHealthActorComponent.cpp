@@ -99,11 +99,15 @@ void USTUHealthActorComponent::HealUpdate()
 // функция установления здоровья
 void USTUHealthActorComponent::SetHealth(float NewHealth) 
 {
-	// устанавливаем здоровье, проверяем на мин/макс
-	Health = FMath::Clamp(NewHealth,0.0f,MaxHealth);
+	const auto NextHealth  = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
+	const auto HealthDelta = NextHealth - Health; // разница между следующим значением здоровья и текущим
 
-	// каждый раз при изменении здоровья вызываем делегат
-	OnHealthChanged.Broadcast(Health);
+	// устанавливаем новое значение здоровья
+	Health = NextHealth;
+
+	// каждый раз при изменении здоровья вызываем делегат, передаем в него 2 параметра
+	// функции подписанные на данный делегат так же принимают 2 параметра
+	OnHealthChanged.Broadcast(Health, HealthDelta);
 }
 
 // добавляет здоровье при подборе

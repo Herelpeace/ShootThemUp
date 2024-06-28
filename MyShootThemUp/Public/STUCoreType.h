@@ -74,7 +74,8 @@ DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
 // для STUHealthActorComponent
 // создаем делегат с 1 параметром, имя FOnHealthChanged, тип параметров float
 // вызываем делегат когда происходит изменение Health
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float);
+// изменили сигнатуру делегата на 2 параметра, добавили float HealthDelta 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, float);
 
 
 // VFX

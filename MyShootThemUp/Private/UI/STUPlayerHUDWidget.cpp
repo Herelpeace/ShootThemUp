@@ -7,6 +7,33 @@
 #include "Components/STUWeaponComponent.h" 
 #include "STUUtils.h"
 
+// подписываемся на делегат OnHealthChanged (float Health)
+bool USTUPlayerHUDWidget::Initialize()
+{
+	// получаем указатель на копонент здоровья Pawna при помощи шаблонной функции
+	const auto HealthComponent = STUUtils::GetSTPlayerComponent<USTUHealthActorComponent>(GetOwningPlayerPawn());
+	
+	if (HealthComponent)
+	{
+		// подписались на делегат OnHealthChanged у HealthComponentа
+		HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
+	}
+
+	return Super::Initialize();
+}
+
+// для бинда на делегат Health компонента, функция которая будет вызывана
+// принимаеиые параметры она получит из события broadcast делегата OnHealthChanged в HealthComponente
+void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta)
+{
+	if (HealthDelta < 0.0f)
+	{
+		OnTakeDamage();
+		// функция Event которую будем вызывать в БП
+		// тело функции создавать ненужно
+	}
+}
+
 
 // функция для вызова в БП, возвращает текущее здоровье персонажа
 float USTUPlayerHUDWidget::GetHealthPercent() const

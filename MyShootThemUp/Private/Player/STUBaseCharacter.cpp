@@ -70,7 +70,7 @@ void ASTUBaseCharacter::BeginPlay()
 	check(GetMesh());
 
     // т.к сначала вызвается BeginPlay у компонентов, а затем у Character,нам нужно отобразить здоровье заранее до делегата
-	OnHealthChanged(HealthComponent->GetHealth());
+	OnHealthChanged(HealthComponent->GetHealth(), 0.0f);
 
 	// биндим делегат на функцию
 	// т.к делегат используется только в С++ ипользуем AddUObject
@@ -89,7 +89,7 @@ void ASTUBaseCharacter::BeginPlay()
 
 
 // выводим значение здоровья на экран в виде цифр
-void ASTUBaseCharacter::OnHealthChanged(float Health) 
+void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta)
 {
 	HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT(" %.0f"), Health))); // выводим значение здоровья на экран в виде цифр
 }

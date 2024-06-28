@@ -97,7 +97,7 @@ private:
 
 	void OnDeath();                   // функция вызывается делегатом, при 0 уровне здоровья
 
-	void OnHealthChanged(float Health); // функция вызываемая делегатом при изменении здоровья
+	void OnHealthChanged(float Health, float HealthDelta); // функция вызываемая делегатом при изменении здоровья
 
 	UFUNCTION()
 	void OnGroundLanded(const FHitResult& Hit);   // функция вызываемая делегатом при падении с высоты

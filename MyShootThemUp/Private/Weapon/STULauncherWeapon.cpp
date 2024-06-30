@@ -60,7 +60,7 @@ void ASTULauncherWeapon::MakeShot()
 		// создаем переменную класса и через неё обращаемся к public методам класса
 
 		Projectile->SetOwner(GetOwner());
-		// присваиваем владельца Projectilу текущего Charactera т.к. оружие будет уустановлено у Charactera
+		// присваиваем владельца Projectilу текущего Charactera т.к. оружие будет установлено у Charactera
 
 
 		// заершаем спавн
@@ -70,5 +70,7 @@ void ASTULauncherWeapon::MakeShot()
 	// уменьшаем количество патронов
 	DecreaseAmmo();
 
+	// спавним эффект Niagara
+	SpawnMuzzleFX();
 
 }

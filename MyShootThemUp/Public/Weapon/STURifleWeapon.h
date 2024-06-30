@@ -8,6 +8,10 @@
 #include "STURifleWeapon.generated.h"
 
 class USTUWeaponFXComponent;
+class UNiagaraSystem;
+class UNiagaraComponent;
+
+
 
 UCLASS()
 class MYSHOOTTHEMUP_API ASTURifleWeapon : public ASTUBaseWeapon
@@ -43,7 +47,17 @@ private:
 	// переменная для таймера
 	FTimerHandle ShotTimerHandle;
 
+	UPROPERTY()
+	UNiagaraComponent* MuzzleFXComponent;
+
 	// нанесение урона Damage, актору
 	void MakeDamage(FHitResult& HitResult);
 	
+	// спавнит niagara system
+	void InitMuzzleFX();
+
+	// устанавливает видимость эффекта
+	void SetMuzzleFXVisibility(bool Visibility);
+	
+
 };

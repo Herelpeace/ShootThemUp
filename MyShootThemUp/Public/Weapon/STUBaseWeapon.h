@@ -10,6 +10,8 @@
 
 
 class USkeletalMeshComponent; // Forward declaration
+class UNiagaraSystem;
+class UNiagaraComponent;
 
 
 UCLASS()
@@ -57,6 +59,10 @@ protected:
 	FWeaponUIData UIData;   // FWeaponUIData структура хранит иконки оружия и прицела
 	                        // для каждого вида оружия в БП инициализируем структуру по своему
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+	UNiagaraSystem* MuzzleFX;  // выбираем niagara эффект для выстрела, дуло
+
+
 	virtual void MakeShot();
 
 	// заполняем начальные и конечные координаты для рисуемой линии
@@ -90,6 +96,9 @@ protected:
 
 	// выводит состояние аммуниции в консоль
 	void LogAmmo();
+
+	// функция спавна эффекта ниагара
+	UNiagaraComponent* SpawnMuzzleFX();
 
 private:
 	// только для использования внутри c++ классе, не должна быть видна в БП

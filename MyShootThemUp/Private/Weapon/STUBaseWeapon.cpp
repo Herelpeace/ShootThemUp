@@ -8,6 +8,9 @@
 #include "DrawDebugHelpers.h"                    // дли рисования линий (Line Trace)
 #include "GameFramework/Character.h"             // класс Charactera
 #include "GameFramework/Controller.h"            // класс Controllera чтобы через него получить доступ к камере
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+
 
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All);
@@ -304,4 +307,20 @@ bool  ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
 	}
 	return true;
 
+}
+
+
+
+// функция спавна эффекта ниагара
+UNiagaraComponent* ASTUBaseWeapon::SpawnMuzzleFX()
+{
+	return UNiagaraFunctionLibrary::SpawnSystemAttached (MuzzleFX,WeaponMesh,MuzzleSocketName,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget,true);
+	// после спавна функция вернет указатель на созданный NiagaraComponent
+	// MuzzleFX						  - указатель на NiagaraSystem
+	// WeaponMesh					  - компонент к которому приаттачиваем NiagaraSystem
+	// MuzzleSocketName				  - имя точки/ сокета к которой присоединяем
+	// FVector::ZeroVector			  - координаты смещения внтури MuzzleSocketName. устанавливаем в 0, трансформация будет как у MuzzleSocketName
+	// FRotator::ZeroRotator          - вращение внутри MuzzleSocketName. устанавливаем в 0, трансформация будет как у MuzzleSocketName
+	// EAttachLocation::SnapToTarget  - attachment rool
+	// true                           - автоматические удаление после заврешения анимации эффекта
 }

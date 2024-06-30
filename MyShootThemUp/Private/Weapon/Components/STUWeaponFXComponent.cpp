@@ -19,15 +19,15 @@ USTUWeaponFXComponent::USTUWeaponFXComponent()
 // проигрываем эффект Niagara при выстреле
 void USTUWeaponFXComponent::PlayImpactFX(const FHitResult& Hit)
 {
-	auto ImpactData = DefaultImpactData;  // записываем эффект в переменную
+	auto ImpactData = DefaultImpactData;             // записываем эффект в переменную
 
-	if (Hit.PhysMaterial.IsValid())  // проверка что у объекта есть физический материал
+	if (Hit.PhysMaterial.IsValid())                  // проверка что у объекта есть физический материал
 	{
 		const auto PhysMat = Hit.PhysMaterial.Get(); // получаем физический материал
 
-		if (ImpactDataMap.Contains(PhysMat))  // у контейнера вызваем функцию Contains(key) - проверят есть ли ключ в контейнере
+		if (ImpactDataMap.Contains(PhysMat))         // у контейнера вызваем функцию Contains(key) - проверят есть ли ключ в контейнере
 		{
-			ImpactData = ImpactDataMap[PhysMat]; // записываем эффект который соответствует найденному ключу
+			ImpactData = ImpactDataMap[PhysMat];     // записываем эффект который соответствует найденному ключу
 		}
 	}
 

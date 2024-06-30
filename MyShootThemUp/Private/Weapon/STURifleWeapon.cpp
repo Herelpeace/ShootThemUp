@@ -6,6 +6,8 @@
 #include "Engine/World.h"                        // 
 #include "DrawDebugHelpers.h"                    // дли рисования линий (Line Trace)
 #include "Weapon/Components/STUWeaponFXComponent.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
 
 
 ASTURifleWeapon::ASTURifleWeapon()  // конструктор класса ASTURifleWeapon, нужен для создания компонета STUWeaponFXComponent
@@ -25,6 +27,9 @@ void ASTURifleWeapon::BeginPlay()
 // начало стрельбы
 void ASTURifleWeapon::StartFire()
 {
+	// эффект niagara
+	InitMuzzleFX();
+
 	// UE_LOG(LogBaseWeapon, Warning, TEXT(" StartFire!!! "));
 
 	// запуск таймера
@@ -45,6 +50,9 @@ void ASTURifleWeapon::StartFire()
 // конец стрельбы
 void ASTURifleWeapon::StopFire()
 {
+	// выключаем видимость эффекта niagara
+	SetMuzzleFXVisibility(false);
+
 	// UE_LOG(LogBaseWeapon, Warning, TEXT(" StopFire!!! "));
 
 	// остановка таймера
@@ -194,3 +202,34 @@ void  ASTURifleWeapon::MakeDamage(FHitResult& HitResult)
 	// GetPlayerController() - указатель на контроллер который нанес урон
 	// this                  - указатель на актор который нанес урон, текущее оружие this
 }
+
+
+// спавнит niagara system
+void ASTURifleWeapon::InitMuzzleFX()
+{
+	// если эффекта нет, спавним его. спавнится 1 раз, затем только меняем видимость
+	if (!MuzzleFXComponent)
+	{
+		MuzzleFXComponent = SpawnMuzzleFX();
+	}
+
+	// включаем видимость
+	SetMuzzleFXVisibility(true);
+}
+
+// устанавливает видимость эффекта
+void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visibility)
+{
+	// проверка что эффект есть
+	if (MuzzleFXComponent)
+	{
+		// приостанавливает анимацию niagara
+		MuzzleFXComponent->SetPaused(!Visibility);
+
+		// включить/ выключить видимость эффекта
+		MuzzleFXComponent->SetVisibility(Visibility, true);
+		// Visibility - булевая, видимость у текущего компонента
+		// false      - видимость у наследников
+	}
+}
+

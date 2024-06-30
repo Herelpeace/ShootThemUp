@@ -92,7 +92,7 @@ void ASTUProjectile::OnProjectileHit( UPrimitiveComponent* HitComponent, AActor*
 	// DoFullDamage			   	   - true - макcимальный урон на любом удалении от центра, false - чем ближе к центру тем урон больше
 
 	// отображаем сферу урона
-	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Green, false, 5.0f);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Green, false, 5.0f);
 
 	WeaponFXComponent->PlayImpactFX(Hit);
 	// вызываем функцию проигрвания FX, передаем Hit объект (информацию об столкновении)

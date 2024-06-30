@@ -8,6 +8,7 @@
 #include "Weapon/Components/STUWeaponFXComponent.h"
 #include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 
 ASTURifleWeapon::ASTURifleWeapon()  // конструктор класса ASTURifleWeapon, нужен для создания компонета STUWeaponFXComponent
@@ -88,54 +89,24 @@ void ASTURifleWeapon::MakeShot()
 	// заполняем структуру HitResult
 	MakeHit(HitResult, TraceStart, TraceEnd);
 
+	FVector TraceFXEnd = TraceEnd;
 
 	// если пересечение было, попали в какой либо актор
 	if (HitResult.bBlockingHit)
 	{
+		// точку столкновения записываем в TraceFXEnd 
+		TraceFXEnd = HitResult.ImpactPoint;
+		
+		
 		// функция нанесения урона актору
 		MakeDamage(HitResult);
 
-
-		// функция отрисовки линии,пердаем коодинаты в виде переменных (без нашей функции, рефакторинга)
-		//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 3.0f, 0, 3.0f);
-
-		//DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Green, false, 3.0f, 0, 3.0f);
-
-		// GetWorld()    - указатель на мир
-		// TraceStart    - координаты откуда начинается линия
-		// TraceEnd      - конечная точка
-		// FColor::Green - цвет линии
-		// false         - линия не остается навсегда, исчезает через какое то время
-		// 3.0f          - время отображения линии до исчезновения
-		// 0             - порядок отрисовки глубины
-		// 3.0f          - толщина линии
-
-		// SocketTransform.GetLocation() - координаты откуда начинается линия
-		// HitResult.ImpactPoint         - конечная точка
-
-
-		// рисуем сферу в месте пересечения
-		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24.0f, FColor::Green, false, 5.0f);
-
-		// GetWorld()            - указатель на мир
-		// HitResult.ImpactPoint - центр сферы, координаты в которых рисуем сферу, берем координаты точки пересечения
-		// 10.0f                 - радиус сферы
-		// 24.0f                 - количество сегментов
-		// FColor::Green         - цвет сферы
-		// false                 - ?
-		// 5.0f                  - время отображения сферы секунд
-
-		// UE_LOG(LogBaseWeapon, Warning, TEXT(" Bone: %s "), *HitResult.BoneName.ToString());
-
 		WeaponFXComponent->PlayImpactFX(HitResult);
 		// вызываем функцию проигрвания FX, передаем Hit объект (информацию об столкновении)
+	}
 
-	}
-	else
-	{
-		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Green, false, 3.0f, 0, 3.0f);
-		// если никуда не попали то конечную точку рисуем в TraceEnd
-	}
+	// спавн трасера от дула до точки столкновения
+	SpawnTraceFX(GetMuzzleWorldLocation(), TraceFXEnd);
 
 	// уменьшаем количество патронов
 	DecreaseAmmo();
@@ -233,3 +204,31 @@ void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visibility)
 	}
 }
 
+// спавн эффекта трассировки
+void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd)
+{
+	// спавним эффект в точке дула
+	const auto TraceFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TraceFX, TraceStart);
+	// GetWorld() - указатель на мир
+	// TraceFX    - указатель на UNiagaraSystem
+	// TraceStart - координаты спавна в мире
+
+	if (TraceFXComponent)
+	{
+		// передаем Vector3 в эффект niagara (конечную точку спавна)
+		TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, TraceEnd);
+		// TraceTargetName - имя переменной
+		// TraceEnd        - значение переменной
+
+		// функция для передачи в niagara различных переменных
+		// SetNiagaraVariableActor
+		// SetNiagaraVariableBool
+		// SetNiagaraVariableFloat
+		// SetNiagaraVariableInt
+		// SetNiagaraVariablerColor
+		// SetNiagaraVariableVec2
+		// SetNiagaraVariableVec3
+
+	}
+
+}

@@ -1,5 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
-// MyShootThemUp.Build.cs
+// В Build.cs
 
 using UnrealBuildTool;
 
@@ -9,7 +9,7 @@ public class MyShootThemUp : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Niagara", "PhysicsCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Niagara", "PhysicsCore", "GameplayTasks","NavigationSystem" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
@@ -22,7 +22,8 @@ public class MyShootThemUp : ModuleRules
           "MyShootThemUp/Public/Animations",
           "MyShootThemUp/Public/Pickups",
           "MyShootThemUp/Public/Weapon/Components",
-          "MyShootThemUp/AI"
+          "MyShootThemUp/AI",
+          "MyShootThemUp/AI/Tasks"
         });       // Директории до h файлов проекта
 
 		// Uncomment if you are using Slate UI

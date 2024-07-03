@@ -1,5 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
-// В ASTUAIBaseCharacter.h
+// В STUAIBaseCharacter.h
 
 #pragma once
 
@@ -7,9 +7,8 @@
 #include "Player/STUBaseCharacter.h"
 #include "STUAIBaseCharacter.generated.h"
 
-/**
- * 
- */
+class UBehaviorTree;
+
 UCLASS()
 class MYSHOOTTHEMUP_API ASTUAIBaseCharacter : public ASTUBaseCharacter
 {
@@ -18,4 +17,10 @@ class MYSHOOTTHEMUP_API ASTUAIBaseCharacter : public ASTUBaseCharacter
 public:
 	// конструктор класса с параметром т.к в базовом классе конструктор так же с параметром
 	ASTUAIBaseCharacter(const FObjectInitializer& ObjInit );
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+	UBehaviorTree* BehaviorTreeAsset;		// для установки BehaviorTree ассета
+
+
 };

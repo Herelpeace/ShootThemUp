@@ -5,9 +5,10 @@ class STUUtils
 {
 public:
 	// шаблонная функция возвращает указатель на компонет (HealthComponent, WeaponComponent)
-	// принимает указатель на Pawn
+	// принимает указатель на Pawn, испрвлено на актор т.к GetComponentByClass это функция актора а не павна 
+	// есть встроенная фнукция FindComponentByClass(), можно пользоваться ею
 	template <typename T>
-	static T* GetSTPlayerComponent(APawn* PlayerPawn)
+	static T* GetSTPlayerComponent(AActor* PlayerPawn)
 	{
 		if (!PlayerPawn) return nullptr;
 

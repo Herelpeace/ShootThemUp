@@ -74,17 +74,36 @@ APlayerController* ASTUBaseWeapon::GetPlayerController() const
 // получаем Координаты и вращение камеры
 bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
 {
-	const auto Controller = GetPlayerController();
+	// получаем указатель на Character
+	const auto STUCharacter = Cast<ACharacter>(GetOwner());
+	if (!STUCharacter) return false;
 
-	if (!Controller)  return false;
+	// проверка что Character  контроллируется игроком а не AI контроллером 
+	if (STUCharacter->IsPlayerControlled())
+	{
+		const auto Controller = GetPlayerController();
 
-	//FVector ViewLocation;  // для сохранения координат
-	//FRotator ViewRotation; // для сохранения вращения
+		if (!Controller)  return false;
 
-	Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
-	// заполняем переменные ViewLocation, ViewRotation данными
-	// из указателя на Controller получаем позицию камеры
-	// указатель на камеру Charactera ViewLocation - коорддинаты камеры, ViewRotation- вращение камеры
+		//FVector ViewLocation;  // для сохранения координат
+		//FRotator ViewRotation; // для сохранения вращения
+
+		Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+		// заполняем переменные ViewLocation, ViewRotation данными
+		// из указателя на Controller получаем позицию камеры
+		// указатель на камеру Charactera ViewLocation - коорддинаты камеры, ViewRotation- вращение камеры
+	}
+	else
+	{
+		// заполняем переменные ViewLocation, ViewRotation,  просто стреляем в направлении дула npc
+		
+		// получаем координаты дула 
+		ViewLocation = GetMuzzleWorldLocation();
+
+		// вращение получаем от мэша из функции GetSocketRotation()
+		ViewRotation = WeaponMesh->GetSocketRotation(MuzzleSocketName);
+	}
+	
 	return true;
 }
 

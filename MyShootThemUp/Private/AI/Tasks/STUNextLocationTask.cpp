@@ -42,10 +42,23 @@ EBTNodeResult::Type USTUNextLocationTask::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	if (!NavSys) return EBTNodeResult::Failed;
 
-	FNavLocation NavLocation;  // переменная в которую навигатор будет сохранять координаты
+	FNavLocation NavLocation;                  // переменная в которую навигатор будет сохранять координаты
+	auto Location = Pawn->GetActorLocation();  // координаты Pawna 
+	if (!SelfCenter)
+	{
+		// получаем значение переменной типа Object из Blackboard
+		auto CenterActor = Cast<AActor>(Blackboard->GetValueAsObject(CenterActorKey.SelectedKeyName));
+		// Blackboard->GetValueAsObject() - возвращает значение объекта в Blackboard, принимает имя объекта
+		// CenterActorKey.SelectedKeyName - объект который задаем в Blackboard
+
+		if(!CenterActor) return EBTNodeResult::Failed;
+
+		Location = CenterActor->GetActorLocation();
+	}
+
 
 	// получаем рандомные координаты внутри радиуса, NPC всегда сможет к ним добраться т.к. они получены через систему навигации
-	const auto Found = NavSys->GetRandomReachablePointInRadius (Pawn->GetActorLocation(), Radius, NavLocation );
+	const auto Found = NavSys->GetRandomReachablePointInRadius (Location, Radius, NavLocation );
 	// Pawn->GetActorLocation() - точка относительно которой строим радиус поиска рандомной точки
 	// Radius                   - радиус поиска
 	// NavLocation              - переменная типа FNavLocation, в которую сохраняем координаты 

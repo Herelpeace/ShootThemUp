@@ -30,4 +30,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	FBlackboardKeySelector AimLocation;		// переменная структуры blackboard в которую записываем найденую точку
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	bool SelfCenter = true;		// искать рандомную точку относительно себя или относительно другого актора
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (EditCondition = "!SelfCenter"))
+	FBlackboardKeySelector CenterActorKey;		// ключ для объекта относительно которого находим рандомную точку
 };
+
+

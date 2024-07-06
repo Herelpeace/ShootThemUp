@@ -5,6 +5,7 @@
 #include "AI/STUAIController.h"
 #include "AI/STUAIBaseCharacter.h"
 #include "Components/STUAIPerceptionComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"  // подключен
 
 
 ASTUAIController::ASTUAIController()
@@ -33,14 +34,27 @@ void ASTUAIController::OnPossess(APawn* InPawn)
 
 }
 
+// каждый тик поворачиваемся на актора в зоне видимости
 void ASTUAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	// получаем актора в зоне видимости
-	const auto AimActor = STUAIPerceptionComponent->GetClossesEnemy();
+	const auto AimActor = GetFocusOnActor();
 
 	// forward вектор актора поворачивает на объект который передем в качестве параметра 
 	SetFocus(AimActor);
+
+}
+
+// возвращает указатель на actor на котором npc нужно сфокусироваться
+AActor* ASTUAIController::GetFocusOnActor() const
+{
+	if (!GetBlackboardComponent()) return nullptr;
+
+	// через имя переменной в Blackboard получаем Object которого кастим до актора
+	return Cast<AActor> ( GetBlackboardComponent()->GetValueAsObject(FocusOnKeyName));
+	// GetBlackboardComponent()->GetValueAsObject(FocusOnKeyName) - возвращает указатель на базовый тип UObject
+	// поэтому кастим его до актора 
 
 }

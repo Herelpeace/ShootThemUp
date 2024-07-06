@@ -23,7 +23,10 @@ public class MyShootThemUp : ModuleRules
           "MyShootThemUp/Public/Pickups",
           "MyShootThemUp/Public/Weapon/Components",
           "MyShootThemUp/AI",
-          "MyShootThemUp/AI/Tasks"
+          "MyShootThemUp/AI/Tasks",
+          "MyShootThemUp/AI/Tasks/Services"
+
+
         });       // Директории до h файлов проекта
 
 		// Uncomment if you are using Slate UI

@@ -18,9 +18,12 @@ public:
 	// конструктор класса с параметром т.к в базовом классе конструктор так же с параметром
 	ASTUAIBaseCharacter(const FObjectInitializer& ObjInit );
 
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
 	UBehaviorTree* BehaviorTreeAsset;		// для установки BehaviorTree ассета
+
+protected:
+	virtual void OnDeath() override;
+
 
 
 };

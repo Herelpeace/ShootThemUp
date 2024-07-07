@@ -64,13 +64,12 @@ protected:
 	FVector2D LandedDamage = FVector2D(10.0f, 100.0f);              // 10 - минимальный урон, 100 - максимальный урон 
 
 
-
-
-
-
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// функция вызывается делегатом, при 0 уровне здоровья
+	virtual void OnDeath();                   
+
 
 public:	
 	// Called every frame
@@ -94,8 +93,6 @@ private:
     bool IsMovingForward = false;     // отслеживает нажата ли клавиша вперед (W или стрелка вверх)
 	void OnStartRunning();            // вызывается при нажатии Left Shift
     void OnStopRunning();             // когда отпустли Left Shift
-
-	void OnDeath();                   // функция вызывается делегатом, при 0 уровне здоровья
 
 	void OnHealthChanged(float Health, float HealthDelta); // функция вызываемая делегатом при изменении здоровья
 

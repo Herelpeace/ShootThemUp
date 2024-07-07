@@ -6,6 +6,7 @@
 #include "AI/STUAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/STUAIWeaponComponent.h"
+#include "BrainComponent.h"
 
 
 // конструктор класса с параметром т.к в базовом классе конструктор так же с параметром
@@ -30,6 +31,22 @@ ASTUAIBaseCharacter::ASTUAIBaseCharacter(const FObjectInitializer& ObjInit) :Sup
 		GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 200.0f, 0.0f);
+	}
+}
+
+// переопределяем функцию OnDeath() базового класса 
+void ASTUAIBaseCharacter::OnDeath()
+{
+	Super::OnDeath();
+
+	// получаем AIController в классе Charactera
+	const auto STUController = Cast<AAIController>(Controller);
+
+	// проверка что у контроллера есть BrainComponent
+	if (STUController && STUController->BrainComponent)
+	{
+		// останавливаем дерево поведения
+		STUController->BrainComponent->Cleanup();
 	}
 
 }

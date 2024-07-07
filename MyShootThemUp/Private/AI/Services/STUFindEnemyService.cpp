@@ -1,6 +1,8 @@
  
 // Tem Up Game , All Rights Reserved
+// сервис, ищем противника и заносим его в переменную Blackboarda
 // В STUFindEnemyService.cpp
+
 
 
 #include "AI/Services/STUFindEnemyService.h"

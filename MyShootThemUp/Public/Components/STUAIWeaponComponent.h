@@ -1,5 +1,7 @@
 // My Shoot Them Up Game , All Rights Reserved
+// смена оружи€ если нет патронов, наследник от STUWeaponComponent
 // ¬ STUAIWeaponComponent.h
+
 
 #pragma once
 

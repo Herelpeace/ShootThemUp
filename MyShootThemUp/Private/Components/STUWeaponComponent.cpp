@@ -358,9 +358,7 @@ void USTUWeaponComponent::OnEmptyClip(ASTUBaseWeapon* AmmoEmptyWeapon)
 				Weapon->ChangeClip();
 			}
 		}
-
-	}
-	
+	}	
 }
 
 // вся логика перезарядки находится в этой функции
@@ -419,5 +417,4 @@ bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, i
 	}
 	// если в массиве нет нашего оружия
 	return false;
-
 }

@@ -41,6 +41,9 @@ public:
 	bool TryToAddAmmo(int32 ClipsAmount);
 	// добавляет патроны в магазин, общая для наследников
 
+	// true когда арсенал полностью пустой, количество магазинов и патронов = 0
+	bool IsAmmoEmpty() const;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
@@ -84,9 +87,6 @@ protected:
 
 	// уменьшает количество патронов, вызывается после каждого выстрела
 	void DecreaseAmmo();
-
-	// true когда арсенал полностью пустой, количество магазинов и патронов = 0
-	bool IsAmmoEmpty() const;
 
 	// true когда текущий магазин пустой
 	bool IsClipEmpty() const;

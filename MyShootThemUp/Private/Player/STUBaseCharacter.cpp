@@ -3,8 +3,8 @@
 
 
 #include "Player/STUBaseCharacter.h"
-#include "Camera/CameraComponent.h"             // добавляем заголовочный файл камеры
-#include "GameFramework/SpringArmComponent.h"   // компонент вращения
+#include "Camera/CameraComponent.h"                   // добавляем заголовочный файл камеры
+#include "GameFramework/SpringArmComponent.h"         // компонент вращения
 #include "Components/STUCharacterMovementComponent.h" // добавляем наш созданный STUCharacterMovementComponent
 #include "Components/STUHealthActorComponent.h"       // подключили наш компонент здоровья
 #include "Components/TextRenderComponent.h"           // отоброжение текста на экране, для здоровья

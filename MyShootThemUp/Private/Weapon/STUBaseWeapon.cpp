@@ -328,8 +328,6 @@ bool  ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
 
 }
 
-
-
 // функция спавна эффекта ниагара
 UNiagaraComponent* ASTUBaseWeapon::SpawnMuzzleFX()
 {

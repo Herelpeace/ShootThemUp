@@ -5,10 +5,11 @@
 #include "AI/STUAIBaseCharacter.h"
 #include "AI/STUAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/STUAIWeaponComponent.h"
 
 
 // конструктор класса с параметром т.к в базовом классе конструктор так же с параметром
-ASTUAIBaseCharacter::ASTUAIBaseCharacter(const FObjectInitializer& ObjInit):Super(ObjInit)
+ASTUAIBaseCharacter::ASTUAIBaseCharacter(const FObjectInitializer& ObjInit) :Super(ObjInit.SetDefaultSubobjectClass<USTUAIWeaponComponent>("WeaponComponent"))
 {
 	// настройка Details-> Pawn-> Auto Possess AI
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;

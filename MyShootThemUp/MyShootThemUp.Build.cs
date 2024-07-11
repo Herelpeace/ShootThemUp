@@ -25,7 +25,8 @@ public class MyShootThemUp : ModuleRules
           "MyShootThemUp/AI",
           "MyShootThemUp/AI/Tasks",
           "MyShootThemUp/AI/Tasks/Services",
-          "MyShootThemUp/AI/EQS"
+          "MyShootThemUp/AI/EQS",
+          "MyShootThemUp/AI/Decorators"
 
 
         });       // Директории до h файлов проекта

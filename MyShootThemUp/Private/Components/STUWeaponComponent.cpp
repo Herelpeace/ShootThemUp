@@ -418,3 +418,26 @@ bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, i
 	// если в массиве нет нашего оружия
 	return false;
 }
+
+// проверяет требуются ли патронны для данного оружия в декораторе NeedAmmoDecorator
+bool USTUWeaponComponent::NeedAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType)
+{
+	for (const auto Weapon : Weapons)
+	{
+		if (Weapon && Weapon->IsA(WeaponType))
+		{
+			// у элемента Weapon массива TArray<ASTUBaseWeapon* > Weapons вызываем функцию IsA()
+			// isA  - true если принимаемый объект того же типа что и элемент массива
+
+			// у элемента массива TArray<ASTUBaseWeapon* > Weapons вызываем функцию IsAmmoFull()
+			return !Weapon->IsAmmoFull();
+
+		}
+	}
+	// если в массиве нет нашего оружия
+	return false;
+
+}
+
+
+

@@ -26,7 +26,8 @@ public:
 	void Reload();     // перезарядка
 	bool GetCurrentWeaponUIData(FWeaponUIData& UIData) const; // возвращает UIData текущего оружия (внутри функции UIData присваивается значение)
 	bool GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const; // возвращает структуру CurrentAmmo (внутри функции AmmoData присваивается значение)
-	bool TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, int32 ClipsAmount); // добавляем магазины, возвращает bool
+	bool TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, int32 ClipsAmount);  // добавляем магазины, возвращает bool
+	bool NeedAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType);                         // проверяет требуются ли патронны для данного оружия в декораторе NeedAmmoDecorator
 
 protected:
 	virtual void BeginPlay() override;

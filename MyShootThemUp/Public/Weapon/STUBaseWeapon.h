@@ -44,6 +44,9 @@ public:
 	// true когда арсенал полностью пустой, количество магазинов и патронов = 0
 	bool IsAmmoEmpty() const;
 
+	//  true -  магазин полный
+	bool IsAmmoFull() const;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
@@ -64,7 +67,6 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
 	UNiagaraSystem* MuzzleFX;  // выбираем niagara эффект для выстрела, дуло
-
 
 	virtual void MakeShot();
 
@@ -90,9 +92,6 @@ protected:
 
 	// true когда текущий магазин пустой
 	bool IsClipEmpty() const;
-
-	//  true -  магазин полный
-	bool IsAmmoFull() const;
 
 	// выводит состояние аммуниции в консоль
 	void LogAmmo();

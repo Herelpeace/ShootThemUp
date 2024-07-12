@@ -82,7 +82,6 @@ void ASTUBasePickup::PickupWasTaken()
 		// true                                - приминить новое значение Visibility к дочерним компонентам
 	}
 
-	FTimerHandle RespawnTimerHandle;  // создаем переменную таймера
 	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ASTUBasePickup::Respawn, RespawnTime);
 	// RespawnTimerHandle      - переменная таймера
 	// this                    - объект у которого вызываем таймер
@@ -115,4 +114,13 @@ void ASTUBasePickup::GenerateRataionYaw()
 	//FMath::RandRange (n1, n2) - возвращает рандомное число между n1 и n 2
 
 }
+
+
+// если можем взять пикап то вернет true
+bool ASTUBasePickup::CouldBeTaken() const
+{
+	return !GetWorldTimerManager().IsTimerActive(RespawnTimerHandle);
+	//GetWorldTimerManager().IsTimerActive - true если таймер активен (в данном случае таймер респавна), принимает Handle таймера 
+}
+
 

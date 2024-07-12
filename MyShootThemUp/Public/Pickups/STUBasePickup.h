@@ -23,7 +23,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
 	float RespawnTime = 5.0f;  // время респавна после взятия объекта
-	
+
 
 	virtual void BeginPlay() override;
 	
@@ -35,10 +35,14 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-private:
+	// если можем взять пикап то вернет true
+	bool CouldBeTaken() const;
 
+private:
 	// угол вращения объекта
 	float RatationYaw = 0.0f;
+
+	FTimerHandle RespawnTimerHandle;  // создаем переменную таймера
 
 	// для классов наследников
 	virtual bool GivePickupTo(APawn* PlayerPawn);

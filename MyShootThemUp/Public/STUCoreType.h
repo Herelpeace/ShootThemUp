@@ -122,3 +122,21 @@ struct FImpactData
 	FDecalData DecalData;
 
 };
+
+// настройки GameMode
+USTRUCT(BlueprintType)
+struct FGameData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", CalampMax = "100"))
+	int32 PlayersNum = 2;	// количество игроков
+
+
+
+
+
+
+
+
+};

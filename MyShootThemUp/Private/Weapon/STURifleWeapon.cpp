@@ -63,7 +63,7 @@ void ASTURifleWeapon::StopFire()
 // функция содержит всю логику выстрела
 void ASTURifleWeapon::MakeShot()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Make Shot"));
+	//UE_LOG(LogTemp, Warning, TEXT("Make Shot"));
 
 	// проверка мира на null, аммуниция пуста IsAmmoEmpty() = true
 	if (!GetWorld() || IsAmmoEmpty())

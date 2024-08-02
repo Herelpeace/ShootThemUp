@@ -8,6 +8,8 @@
 #include "UI/STUGameHUD.h"
 #include "AIController.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogSTUGameModeBase, All, All);
+
 ASTUGameModeBase::ASTUGameModeBase() 
 {
     DefaultPawnClass      = ASTUBaseCharacter::StaticClass();
@@ -23,6 +25,12 @@ void ASTUGameModeBase::StartPlay()
 
     // спавним игроков
     SpawnBots();
+
+    // самый первый раунд
+    CurrentRound = 1;
+
+    // запускаем раунд
+    StartRound();
 
 }
 
@@ -63,4 +71,39 @@ UClass* ASTUGameModeBase::GetDefaultPawnClassForController_Implementation(AContr
         return Super::GetDefaultPawnClassForController_Implementation(InController);
     }
     
+}
+
+
+// запускает раунд
+void ASTUGameModeBase::StartRound()
+{
+    RoundCoundDown = GameData.RoundTime;
+
+    GetWorldTimerManager().SetTimer(GameRoundTimerHandle, this, &ASTUGameModeBase::GameTimerUpdate, 1.0f, true);
+
+}
+
+// обновляет время таймера 
+void ASTUGameModeBase::GameTimerUpdate()
+{
+    UE_LOG(LogSTUGameModeBase, Warning, TEXT(" Time: %i / Round: %i "), RoundCoundDown, GameData.RoundNum);
+
+    if (--RoundCoundDown == 0)
+    {
+        GetWorldTimerManager().ClearTimer(GameRoundTimerHandle);
+
+        if (CurrentRound + 1 <= GameData.RoundNum)
+        {
+            ++CurrentRound;
+            StartRound();
+        }
+        else
+        {
+            UE_LOG(LogSTUGameModeBase, Warning, TEXT("==========GAME OVER=========="));
+        }
+
+
+
+    }
+
 }

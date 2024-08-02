@@ -132,10 +132,12 @@ struct FGameData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", CalampMax = "100"))
 	int32 PlayersNum = 2;	// количество игроков
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
+	int32 RoundNum = 4;		// количество раундов
 
 
-
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "300"))
+	int32 RoundTime = 10;		// время одного раунда в секуднах
 
 
 

@@ -37,7 +37,20 @@ protected:
     FGameData GameData;                                 // наша структура с натройками GameMode
 
 private:
+    int32 CurrentRound = 1;             // текущий раунд
+    int32 RoundCoundDown = 0;           // время до конца раунда
+    FTimerHandle GameRoundTimerHandle;  // дискриптор таймера который будет отсчитывать время в раунде
+
+
     // спавн контроллеров для Pawnoв
     void SpawnBots(); 
+
+    // запускает раунд
+    void StartRound();
+
+    // обновляет время таймера 
+    void GameTimerUpdate();
+
+
 
 };

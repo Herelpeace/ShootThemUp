@@ -191,7 +191,7 @@ void ASTUBaseWeapon::DecreaseAmmo()
 	// если количество магазинов равно 0, выводим сообщение,выходим
 	if (CurrentAmmo.Bullets == 0)
 	{
-		UE_LOG(LogBaseWeapon, Warning, TEXT("Clip is empty!"));
+		//UE_LOG(LogBaseWeapon, Warning, TEXT("Clip is empty!"));
 		return;
 	}
 
@@ -240,7 +240,7 @@ void ASTUBaseWeapon::ChangeClip()
 		// если количество магазинов равно 0, выводим сообщение,выходим
 		if (CurrentAmmo.Clips==0)
 		{
-			UE_LOG(LogBaseWeapon, Warning, TEXT("No More Clips"));
+			//UE_LOG(LogBaseWeapon, Warning, TEXT("No More Clips"));
 			return;
 		}
 		CurrentAmmo.Clips--;
@@ -249,7 +249,7 @@ void ASTUBaseWeapon::ChangeClip()
 	// количество пуль в магазине равно дефолтному
 	CurrentAmmo.Bullets = DefaultAmmo.Bullets;
 
-	UE_LOG(LogBaseWeapon, Warning, TEXT("------Change Clip ------"));
+	//UE_LOG(LogBaseWeapon, Warning, TEXT("------Change Clip ------"));
 
 }
 
@@ -268,7 +268,7 @@ void ASTUBaseWeapon::LogAmmo()
 	AmmoInfo += " Magazine: ";
 	AmmoInfo += CurrentAmmo.Infinite ? "Infinite" : FString::FromInt(CurrentAmmo.Clips);
 
-	UE_LOG(LogBaseWeapon, Warning, TEXT("%s"),*AmmoInfo);
+	//UE_LOG(LogBaseWeapon, Warning, TEXT("%s"),*AmmoInfo);
 
 }
 
@@ -289,7 +289,7 @@ bool  ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
 	// патроны = 0, магазины = 0
 	if (IsAmmoEmpty())
 	{
-		UE_LOG(LogBaseWeapon, Warning, TEXT(" Ammo was empty"));
+		//UE_LOG(LogBaseWeapon, Warning, TEXT(" Ammo was empty"));
 		CurrentAmmo.Clips = FMath::Clamp(ClipsAmount, 0, DefaultAmmo.Clips + 1);
 		//  ClipsAmount          - число магазинов
 		// 0                     - нижняя граница магазинов
@@ -309,20 +309,20 @@ bool  ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
 		if (DefaultAmmo.Clips - NextClipsAmount >=0)
 		{
 			CurrentAmmo.Clips = NextClipsAmount;
-			UE_LOG(LogBaseWeapon, Warning, TEXT(" Clips were added"));
+			//UE_LOG(LogBaseWeapon, Warning, TEXT(" Clips were added"));
 		}
 		else
 		{
 			CurrentAmmo.Clips = DefaultAmmo.Clips;
 			CurrentAmmo.Bullets = DefaultAmmo.Bullets;
-			UE_LOG(LogBaseWeapon, Warning, TEXT(" Ammo is full"));
+			//UE_LOG(LogBaseWeapon, Warning, TEXT(" Ammo is full"));
 		}
 
 	}
 	else // количество магазинов = максимальному но патроны использованы
 	{
 		CurrentAmmo.Bullets = DefaultAmmo.Bullets;
-		UE_LOG(LogBaseWeapon, Warning, TEXT(" Bullets were added"));
+		//UE_LOG(LogBaseWeapon, Warning, TEXT(" Bullets were added"));
 	}
 	return true;
 

@@ -12,8 +12,8 @@
 // конструктор класса с параметром т.к в базовом классе конструктор так же с параметром
 ASTUAIBaseCharacter::ASTUAIBaseCharacter(const FObjectInitializer& ObjInit) :Super(ObjInit.SetDefaultSubobjectClass<USTUAIWeaponComponent>("WeaponComponent"))
 {
-	// настройка Details-> Pawn-> Auto Possess AI
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	// настройка Details-> Pawn-> Auto Possess AI, в какой момент контроллер должен захватывать Pawna
+	AutoPossessAI = EAutoPossessAI::Disabled;
 	//
 	//   Disabled,
 	//	PlacedInWorld,

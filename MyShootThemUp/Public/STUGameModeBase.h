@@ -51,6 +51,11 @@ private:
     // обновляет время таймера 
     void GameTimerUpdate();
 
+    // вызывается в начале раунда, делает респавн всех игроков на их места старта
+    void RestartPlayers();
+
+    // вызываеется в цикле, делает респавн того Charactera, контроллер которого передан в качестве параметра 
+    void ResetOnePlayer(AController* Controller);
 
 
 };

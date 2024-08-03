@@ -15,6 +15,9 @@ ASTUAIController::ASTUAIController()
 
 	// устанавливаем наш компонент, компонентом по умолчанию. принимает ссылку на компонент
 	SetPerceptionComponent(*STUAIPerceptionComponent);
+
+	// включить спавн PlayerState у AI контроллеров
+	bWantsPlayerState = true;
 }
 
 

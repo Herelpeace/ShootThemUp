@@ -95,15 +95,43 @@ void ASTUGameModeBase::GameTimerUpdate()
         if (CurrentRound + 1 <= GameData.RoundNum)
         {
             ++CurrentRound;
+            RestartPlayers();
             StartRound();
         }
         else
         {
             UE_LOG(LogSTUGameModeBase, Warning, TEXT("==========GAME OVER=========="));
         }
+    }
+}
 
 
+// вызывается в начале раунда, делает респавн всех игроков на их места старта
+void ASTUGameModeBase::RestartPlayers()
+{
+    if (!GetWorld()) return;
+
+    for (auto It = GetWorld()->GetControllerIterator();It; ++It)
+    {
+        // GetWorld()->GetControllerIterator() - получить массив указателей на контроллеры которые находятся на уровне 
+
+        ResetOnePlayer(It->Get());
+        // It->Get() получить указатель из массива
+    }
+
+}
+
+// вызываеется в цикле, делает респавн того Charactera, контроллер которого передан в качестве параметра 
+void ASTUGameModeBase::ResetOnePlayer(AController* Controller)
+{
+    if (Controller && Controller->GetPawn())
+    {
+        Controller->GetPawn()->Reset();
+        // Controller->GetPawn()->Reset(); - делает Destroy если Controller = 0 или Controller->PlayerState != 0
+        // у npc PlayerState = 0 , так как он автоматически не спавнится, для спана его нужно включать вручную
 
     }
+
+    RestartPlayer(Controller);
 
 }

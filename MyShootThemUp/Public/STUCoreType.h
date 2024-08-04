@@ -137,8 +137,13 @@ struct FGameData
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "300"))
-	int32 RoundTime = 10;		// время одного раунда в секуднах
+	int32 RoundTime = 10;   // время одного раунда в секуднах
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FLinearColor DefaultTeamColor = FLinearColor::Red; // цвет команды по умолчанию, если в настроках не задан цвет
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray<FLinearColor> TeamColors;	              // массив цветов из которого выбираем цвет команды в зависимости от TeamID
 
 
 };

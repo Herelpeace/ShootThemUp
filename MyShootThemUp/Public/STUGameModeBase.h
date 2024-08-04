@@ -57,5 +57,13 @@ private:
     // вызываеется в цикле, делает респавн того Charactera, контроллер которого передан в качестве параметра 
     void ResetOnePlayer(AController* Controller);
 
+    // вызывается один раз в начале игры, распределяет игроков по командам
+    void CreateTeamsInfo(); 
+
+    // возвращает цвет в зависимости от TeamID
+    FLinearColor DetermineColorByTeamID(int32 TeamID) const;
+
+    // устанавлиает цвет игроку
+    void SetPlayerColor(AController* Controller);
 
 };

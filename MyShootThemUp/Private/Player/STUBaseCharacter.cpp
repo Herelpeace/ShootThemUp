@@ -290,7 +290,21 @@ void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit)
 // OnGroundLanded(const FHitResult& Hit) 
 
 
+// устанавливаем цвет, новая функция из Charactera 
+void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color)
+{
+	// делаем материал на мэше динамическим 
+	const auto MaterialInst = GetMesh()->CreateAndSetMaterialInstanceDynamic(0);
 
+	if (!MaterialInst) return;
+
+	// передаем имя параметра и его векторное значение, для установки в качестве новых значений 
+	MaterialInst->SetVectorParameterValue(MaterialColorName, Color);
+
+
+
+
+}
 
 
 

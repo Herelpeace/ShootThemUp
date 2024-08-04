@@ -63,6 +63,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")                // доступен только в дефолтных настройках
 	FVector2D LandedDamage = FVector2D(10.0f, 100.0f);              // 10 - минимальный урон, 100 - максимальный урон 
 
+	UPROPERTY(EditDefaultsOnly, Category = "Material")
+	FName MaterialColorName = "Paint Color";
+
+
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -83,6 +87,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	float GetMovementDirection() const; // поворот персонажа в градусах
+
+	// устанавливаем цвет, новая функция из Charactera 
+	void SetPlayerColor(const FLinearColor& Color);
 
 
 private:

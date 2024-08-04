@@ -7,6 +7,7 @@
 #include "Player/STUPlayerController.h"
 #include "UI/STUGameHUD.h"
 #include "AIController.h"
+#include "Player/STUPlayerState.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUGameModeBase, All, All);
 
@@ -15,6 +16,7 @@ ASTUGameModeBase::ASTUGameModeBase()
     DefaultPawnClass      = ASTUBaseCharacter::StaticClass();
     PlayerControllerClass = ASTUPlayerController::StaticClass();
     HUDClass              = ASTUGameHUD::StaticClass();
+    PlayerStateClass      = ASTUPlayerState::StaticClass();
 }
 
 // внутренн€€ функци€ GameMode, запускаетс€ до BeginPlay GameMode и акторов
@@ -28,6 +30,9 @@ void ASTUGameModeBase::StartPlay()
 
     // самый первый раунд
     CurrentRound = 1;
+
+    // вызываетс€ один раз в начале игры, распредел€ет игроков по командам
+    CreateTeamsInfo();
 
     // запускаем раунд
     StartRound();
@@ -132,6 +137,83 @@ void ASTUGameModeBase::ResetOnePlayer(AController* Controller)
 
     }
 
+    // делает респавн
     RestartPlayer(Controller);
+
+    // устанавливаем цвет
+    SetPlayerColor(Controller);
+}
+
+
+// вызываетс€ один раз в начале игры, распредел€ет игроков по командам
+void ASTUGameModeBase::CreateTeamsInfo()
+{
+    if (!GetWorld()) return;
+
+    int32 TeamID = 1;
+
+    // пробегаем по всем контроллерам
+    for (auto It = GetWorld()->GetControllerIterator(); It; ++It)
+    {
+        const auto Controller = It->Get();
+
+        if (!Controller) continue;
+        
+        // получаем указатель на PlayerState
+        const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
+        // Controller->PlayerState - получаем указатель на базовый класс PlayerState
+        // затем преобразуем его к нашему классу
+
+        if (!PlayerState) continue;
+
+        // задаем номер команды
+        PlayerState->SetTeamID(TeamID);
+
+        // задем цвет команды
+        PlayerState->SetTeamColor(DetermineColorByTeamID(TeamID));
+
+        // устанавливаем цвет
+        SetPlayerColor(Controller);
+
+        // присваиваем следующий номер команды
+        TeamID = TeamID == 1 ? 2 : 1;
+
+    }
+}
+
+// возвращает цвет в зависимости от TeamID
+FLinearColor ASTUGameModeBase::DetermineColorByTeamID(int32 TeamID) const
+{
+    // проверка TeamID-1 меньше чем количество элементов в массиве цветов
+    // количество цветов будет равно либо 0 (нет цветов), либо 1, либо 2
+    if (TeamID - 1 < GameData.TeamColors.Num())
+    {
+        // возвращаем цвет команды
+        return GameData.TeamColors[TeamID - 1];
+    }
+    else
+    {
+        // возвращаем дефолтный цвет дл€ команд которым не задан цвет 
+        return GameData.DefaultTeamColor;
+    }
+
+}
+
+// устанавлиает цвет игроку
+void ASTUGameModeBase::SetPlayerColor(AController* Controller)
+{
+    if (!Controller) return;
+
+    // получаем Charactera
+    const auto Character = Cast<ASTUBaseCharacter>(Controller->GetPawn());
+
+    if (!Character) return;
+
+    // получаем PlayerState
+    const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
+    if (!PlayerState) return;
+
+    // устанавливаем цвет, нова€ функци€ из Charactera 
+    Character->SetPlayerColor(PlayerState->GetTeamColor());
 
 }

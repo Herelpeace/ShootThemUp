@@ -40,8 +40,14 @@ AActor* USTUAIPerceptionComponent::GetClossesEnemy() const
 		// получаем компонент здоровья у акторов которые попали в поле видимости 
 		const auto HealthComponent = STUUtils::GetSTPlayerComponent<USTUHealthActorComponent>(PecieveActor);
 
+		// получаем Pawna
+		const auto PercievePawn = Cast<APawn>(PecieveActor);
+
+		// проверяем является ли врагом Pawn попавшмй в поле видимости
+		const auto AreEnemies = PercievePawn && STUUtils::AreEnemies(Controller, PercievePawn->Controller);
+
 		// у персонажа есть компонент хдоровья и здоровье не равно 0
-		if (HealthComponent && !HealthComponent->isDead())
+		if (HealthComponent && !HealthComponent->isDead() && AreEnemies)
 		{
 			// получаем расстояние до наблючаемого актора
 			const auto CurrentDistance = (PecieveActor->GetActorLocation() - Pawn->GetActorLocation()).Size();

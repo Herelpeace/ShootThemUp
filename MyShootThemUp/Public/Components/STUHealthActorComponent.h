@@ -82,5 +82,9 @@ private:
 
 	// проигрывание эффекта тряски
 	void PlayCameraShakee();
+
+	// киллеру и жертве прибавляем статистику
+	void Killed(AController* KillerController);
+
 		
 };

@@ -9,6 +9,8 @@
 #include "Engine/World.h"   // чтобы получать ссылку на мир, ТаймерМенеджер находится в объекте мира
 #include "TimerManager.h"   // для таймера
 #include "Camera/CameraShakeBase.h"
+#include "STUGameModeBase.h"
+
 
 DEFINE_LOG_CATEGORY_STATIC(LogHealthComponent,All, All);
 
@@ -59,6 +61,9 @@ void USTUHealthActorComponent::OnTakeAnyDamage(
 	// снова проверяем жив ли персонаж
 	if (isDead())
 	{
+		// киллеру и жертве прибавляем статистику
+		Killed(InstigatedBy);
+
 		// через делегат оповещаем всех что у персонажа не осталось здоровья
 	    onDeath.Broadcast();
 	}
@@ -151,5 +156,28 @@ void USTUHealthActorComponent::PlayCameraShakee()
 	Controller->PlayerCameraManager->StartCameraShake(CameraShake);
 
 }
+
+// киллеру и жертве прибавляем статистику
+void USTUHealthActorComponent::Killed(AController* KillerController)
+{
+	if (!GetWorld()) return;
+
+	const auto GameMode = Cast<ASTUGameModeBase>( GetWorld()->GetAuthGameMode());
+
+	if (!GameMode) return;
+
+	// получаем указатель на Charactera
+	const auto Player = Cast<APawn>(GetOwner());
+
+	// в переменную записываем контроллер нашего игрока
+	const auto VictimController = Player ? Player->Controller : nullptr;
+
+	// киллеру и жертве прибавляем статистику
+	GameMode->Killed(KillerController, VictimController);
+
+}
+
+
+
 
 

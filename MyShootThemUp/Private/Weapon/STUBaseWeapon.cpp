@@ -59,6 +59,7 @@ void ASTUBaseWeapon::MakeShot()
 
 
 // функц€ возвращает указатель на контроллер текущего актора
+// ‘ункци€ не используетс€ после 10 раздела 8 урок.
 APlayerController* ASTUBaseWeapon::GetPlayerController() const
 {
 	const auto Player = Cast<ACharacter>(GetOwner());
@@ -81,7 +82,7 @@ bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRot
 	// проверка что Character  контроллируетс€ игроком а не AI контроллером 
 	if (STUCharacter->IsPlayerControlled())
 	{
-		const auto Controller = GetPlayerController();
+		const auto Controller = STUCharacter->GetController<APlayerController>();
 
 		if (!Controller)  return false;
 

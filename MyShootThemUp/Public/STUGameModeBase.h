@@ -25,6 +25,9 @@ public:
 
     virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
+    // записывает статистику убийств
+    void Killed(AController* KillerController, AController* VictimController);
+
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Game")
@@ -65,5 +68,8 @@ private:
 
     // устанавлиает цвет игроку
     void SetPlayerColor(AController* Controller);
+
+    // выводит информацию по всем PlayerStatам, после того как завончилась игра 
+    void LogPlayerInfo();
 
 };

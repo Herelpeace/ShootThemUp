@@ -166,7 +166,7 @@ void  ASTURifleWeapon::MakeDamage(FHitResult& HitResult)
 
 	if (!DamageActor) return;
 
-	DamageActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
+	DamageActor->TakeDamage(DamageAmount, FDamageEvent(), GetController(), this);
 
 	// DamageAmount          - количество Damage
 	// FDamageEvent()        - тип Damage
@@ -232,3 +232,15 @@ void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector& Tra
 	}
 
 }
+
+
+// получаем текущий контроллер (для статистики)
+AController* ASTURifleWeapon::GetController() const
+{
+	// получаем Pawn из GetOwner
+	const auto Pawn = Cast<APawn>(GetOwner());
+
+	// получаем контроллер из Pawna
+	return Pawn ? Pawn->GetController() : nullptr;
+}
+

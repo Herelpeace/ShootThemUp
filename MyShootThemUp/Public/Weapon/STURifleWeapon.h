@@ -67,6 +67,9 @@ private:
 
 	// спавн эффекта трассировки
 	void SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
+
+	// получаем текущий контроллер (для статистики)
+	AController* GetController() const;
 	
 
 };

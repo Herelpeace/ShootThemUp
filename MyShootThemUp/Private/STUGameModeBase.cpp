@@ -36,8 +36,8 @@ void ASTUGameModeBase::StartPlay()
 
     // запускаем раунд
     StartRound();
-
 }
+
 
 // спавн контроллеров для Pawnoв
 void ASTUGameModeBase::SpawnBots()
@@ -60,6 +60,7 @@ void ASTUGameModeBase::SpawnBots()
     }
 
 }
+
 
 // переопределили функцию GetDefaultPawnClassForController, чтобы задать класс Pawn который нужно спавнить 
 // если класс не задан в настроках то вызыаем эту же функцию не переопределенную у базового класса 
@@ -106,6 +107,7 @@ void ASTUGameModeBase::GameTimerUpdate()
         else
         {
             UE_LOG(LogSTUGameModeBase, Warning, TEXT("==========GAME OVER=========="));
+            LogPlayerInfo();
         }
     }
 }
@@ -217,3 +219,54 @@ void ASTUGameModeBase::SetPlayerColor(AController* Controller)
     Character->SetPlayerColor(PlayerState->GetTeamColor());
 
 }
+
+// записывает статистику убийств
+void ASTUGameModeBase::Killed(AController* KillerController, AController* VictimController)
+{
+    // сначала получаем PlayerStatы киллера и жертвы
+    const auto KillerPlayerState = KillerController ? Cast<ASTUPlayerState>(KillerController->PlayerState) : nullptr;
+
+    const auto  VictimPlayerState = VictimController ? Cast<ASTUPlayerState>(VictimController->PlayerState) : nullptr;
+
+    if (KillerPlayerState)
+    {
+        // киллеру прибавляем количество убийств
+        KillerPlayerState->AddKill();
+    }
+
+    if (VictimPlayerState)
+    {
+        // жертве прибавляем количество смертей
+        VictimPlayerState->AddDeath();
+    }
+
+
+}
+
+// выводит информацию по всем PlayerStatам, после того как завончилась игра 
+void ASTUGameModeBase::LogPlayerInfo()
+{
+    if (!GetWorld()) return;
+
+    // пробегаем по всем контроллерам
+    for (auto It = GetWorld()->GetControllerIterator(); It; ++It)
+    {
+        const auto Controller = It->Get();
+
+        if (!Controller) continue;
+
+        // получаем указатель на PlayerState
+        const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
+        // Controller->PlayerState - получаем указатель на базовый класс PlayerState
+        // затем преобразуем его к нашему классу
+
+        if (!PlayerState) continue;
+
+        // вызываем нашу функцию логирования 
+        PlayerState->LogInfo();
+    }
+
+}
+
+
+

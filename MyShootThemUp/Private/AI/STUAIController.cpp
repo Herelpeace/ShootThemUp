@@ -5,6 +5,7 @@
 #include "AI/STUAIController.h"
 #include "AI/STUAIBaseCharacter.h"
 #include "Components/STUAIPerceptionComponent.h"
+#include "Components/STURespawnComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"  // подключен
 
 
@@ -15,6 +16,9 @@ ASTUAIController::ASTUAIController()
 
 	// устанавливаем наш компонент, компонентом по умолчанию. принимает ссылку на компонент
 	SetPerceptionComponent(*STUAIPerceptionComponent);
+
+	// создаем наш компонент RespawnComponent
+	RespawnComponent = CreateDefaultSubobject<USTURespawnComponent>("RespwnComponent");
 
 	// включить спавн PlayerState у AI контроллеров
 	bWantsPlayerState = true;

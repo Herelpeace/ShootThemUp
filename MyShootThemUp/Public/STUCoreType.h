@@ -146,4 +146,7 @@ struct FGameData
 	TArray<FLinearColor> TeamColors;	              // массив цветов из которого выбираем цвет команды в зависимости от TeamID
 
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "20"))
+	int32 RespawnTime = 5;
+
 };

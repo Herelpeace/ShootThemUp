@@ -8,6 +8,7 @@
 #include "STUAIController.generated.h"
 
 class USTUAIPerceptionComponent;
+class USTURespawnComponent;
 
 UCLASS()
 class MYSHOOTTHEMUP_API ASTUAIController : public AAIController
@@ -22,6 +23,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	USTUAIPerceptionComponent* STUAIPerceptionComponent;	// указатель на наш Perception компонент, будет отображаться в редакторе у STUAIControllerа
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	USTURespawnComponent* RespawnComponent;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	FName FocusOnKeyName = "EnemyActor";	// имя ключа на Object вражеского персонажа (по сути имя указателя на врага)
 

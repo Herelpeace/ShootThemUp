@@ -37,6 +37,9 @@ public:
     // врем€ до конца раунда
     int32 GetRoundSecondsRemaining() const { return RoundCoundDown; }
 
+    // делвем респавн персонажа не дожида€€сь окончани€ раунда
+    void RespawnRequest(AController* Controller);
+
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Game")
     TSubclassOf <AAIController> AIControllerClass;      // переменна€ AIControllera 
@@ -80,4 +83,6 @@ private:
     // выводит информацию по всем PlayerStatам, после того как завончилась игра 
     void LogPlayerInfo();
 
+    // вспомогательна€
+    void StartRespawn(AController* Controller);
 };

@@ -28,6 +28,14 @@ public:
     // записывает статистику убийств
     void Killed(AController* KillerController, AController* VictimController);
 
+    // настроки GameData
+    FGameData GetGameData() const { return GameData; }
+
+    // текущий раунд
+    int32 GetCurrentRoundNum() const { return CurrentRound; }
+
+    // время до конца раунда
+    int32 GetRoundSecondsRemaining() const { return RoundCoundDown; }
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Game")

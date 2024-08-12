@@ -50,5 +50,9 @@ void USTURespawnComponent::RespawnTimerUpdate()
 
 }
 
-
+// true - таймер запущен
+bool USTURespawnComponent::IsRespawnInProgress() const
+{
+	return GetWorld() && GetWorld()->GetTimerManager().IsTimerActive(RespawnTimerHandle);
+}
 

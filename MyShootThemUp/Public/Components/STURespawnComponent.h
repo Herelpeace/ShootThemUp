@@ -19,6 +19,12 @@ public:
 	// запускает таймер респавна через заданное время
 	void Respawn(int32 RespawnTime);
 
+	// получаем количество секунд респавна
+	int32 GetRespawnCountDown() const { return RespawnCountDown; }
+
+	// true - таймер запущен
+	bool IsRespawnInProgress() const;
+
 private:
 	// дискриптор таймера
 	FTimerHandle RespawnTimerHandle;

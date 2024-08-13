@@ -42,6 +42,11 @@ public:
 	virtual bool Initialize() override;  // подписываемся на делегат OnHealthChanged (float Health)
 
 private:
-	void OnHealthChanged(float Health, float HealthDelta );  // для бинда на делегат Health компонента
+	// для бинда на делегат Health компонента
+	void OnHealthChanged(float Health, float HealthDelta );  
 	
+	// для бинда на делегат контроллера GetOnNewPawnNotifier
+	// вызывается при смене Pawna
+	void OnNewPawn(APawn* NewPawn);
+
 };

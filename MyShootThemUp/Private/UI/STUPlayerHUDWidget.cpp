@@ -7,20 +7,40 @@
 #include "Components/STUWeaponComponent.h" 
 #include "STUUtils.h"
 
-// подписываемся на делегат OnHealthChanged (float Health)
+// подписываемся на делегат смены Pawna GetOnNewPawnNotifier
+// функция Initialize() вызывается один раз во время старта игры 
 bool USTUPlayerHUDWidget::Initialize()
 {
-	// получаем указатель на копонент здоровья Pawna при помощи шаблонной функции
-	const auto HealthComponent = STUUtils::GetSTPlayerComponent<USTUHealthActorComponent>(GetOwningPlayerPawn());
-	
-	if (HealthComponent)
+	if (GetOwningPlayer())
 	{
+		// подписываемся на делегат смены Pawna GetOnNewPawnNotifier
+		GetOwningPlayer()->GetOnNewPawnNotifier().AddUObject(this, &USTUPlayerHUDWidget::OnNewPawn);
+		
+		// так как функция OnPosses вызывается до Initialize() то мы не сможем забиндится на делегат 
+		// нам нужно вызывать функцию OnNewPawn первый раз принудительно
+		OnNewPawn(GetOwningPlayerPawn());
+	}
+	return Super::Initialize();
+}
+
+// для бинда на делегат контроллера GetOnNewPawnNotifier
+// вызывается при смене Pawna
+// подписываемся на делегат OnHealthChanged (float Health)
+void USTUPlayerHUDWidget::OnNewPawn(APawn* NewPawn)
+{
+	// получаем указатель на копонент здоровья Pawna при помощи шаблонной функции
+	const auto HealthComponent = STUUtils::GetSTPlayerComponent<USTUHealthActorComponent>(NewPawn);
+
+	// делаем бинд на делегат OnHealthChanged только в том случае если он еще не забинден
+	if (HealthComponent && !HealthComponent->OnHealthChanged.IsBoundToObject(this) )
+	{
+		//HealthComponent->OnHealthChanged.IsBoundToObject(this) - проверяет что существует bind делегата для данного объекта, что функция забиндена на делегат
+		
 		// подписались на делегат OnHealthChanged у HealthComponentа
 		HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
 	}
-
-	return Super::Initialize();
 }
+
 
 // для бинда на делегат Health компонента, функция которая будет вызывана
 // принимаеиые параметры она получит из события broadcast делегата OnHealthChanged в HealthComponente

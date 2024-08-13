@@ -1,4 +1,5 @@
 // My Shoot Them Up Game , All Rights Reserved
+// В STUGameModeBase.h
 
 #pragma once
 
@@ -85,4 +86,7 @@ private:
 
     // вспомогательная
     void StartRespawn(AController* Controller);
+
+    // вызывается когда все раунды окончены
+    void GameOver();
 };

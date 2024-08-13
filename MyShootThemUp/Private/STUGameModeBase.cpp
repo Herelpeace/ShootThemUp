@@ -10,6 +10,7 @@
 #include "Player/STUPlayerState.h"
 #include "STUUtils.h"
 #include "Components//STURespawnComponent.h"
+#include "EngineUtils.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUGameModeBase, All, All);
 
@@ -110,8 +111,9 @@ void ASTUGameModeBase::GameTimerUpdate()
         }
         else
         {
-            UE_LOG(LogSTUGameModeBase, Warning, TEXT("==========GAME OVER=========="));
-            LogPlayerInfo();
+            // вызываем когда все раунды закончены
+            // отключаем input и передвижени€
+            GameOver();
         }
     }
 }
@@ -149,7 +151,6 @@ void ASTUGameModeBase::ResetOnePlayer(AController* Controller)
     // устанавливаем цвет
     SetPlayerColor(Controller);
 }
-
 
 // вызываетс€ один раз в начале игры, распредел€ет игроков по командам
 void ASTUGameModeBase::CreateTeamsInfo()
@@ -296,5 +297,25 @@ void ASTUGameModeBase::RespawnRequest(AController* Controller)
 }
 
 
+// вызываетс€ когда все раунды окончены
+void ASTUGameModeBase::GameOver()
+{
+    UE_LOG(LogSTUGameModeBase, Warning, TEXT("==========GAME OVER=========="));
+    LogPlayerInfo();
 
+    for (auto Pawn : TActorRange<APawn>(GetWorld()))
+    {
+        if (Pawn)
+        {
+            // отключает коллизию
+            // отключает движение (movementComponent)
+            // отключает физические симул€ции
+            Pawn->TurnOff();
+
+            // отключаем inputComponent у всех персонажей
+            Pawn->DisableInput(nullptr);    
+        }
+
+    }
+}
 

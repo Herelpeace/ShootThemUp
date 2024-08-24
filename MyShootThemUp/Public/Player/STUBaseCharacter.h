@@ -12,11 +12,7 @@
 #include "STUBaseCharacter.generated.h"
 
 
-
-class UCameraComponent;
-class USpringArmComponent;
 class STUHealthActorComponent;    // Forward Declaration нашего класса здоровь€
-class UTextRenderComponent;       // Forward Declaration класса отображени€ текста
 class USTUWeaponComponent;        // наш класс работы с оружием
 
 
@@ -34,16 +30,7 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	USpringArmComponent* SpringArmComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	UCameraComponent* CameraComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USTUHealthActorComponent* HealthComponent;                                 // объ€вили объект класса STUHealthActorComponent, здоровье
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")  
-	UTextRenderComponent* HealthTextComponent;                                // объект отоброжени€ текста на экране, дл€ отоброжени€ здоровь€
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USTUWeaponComponent* WeaponComponent;                                      // создали объект нашего класса оружи€
@@ -67,7 +54,6 @@ protected:
 	FName MaterialColorName = "Paint Color";
 
 
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -79,11 +65,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool IsRunning() const; // возвращает true если Shift нажат, const никакие данные внутри функци€ не мен€ет
+	virtual bool IsRunning() const; // возвращает true если Shift нажат, const никакие данные внутри функци€ не мен€ет
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	float GetMovementDirection() const; // поворот персонажа в градусах
@@ -93,14 +76,6 @@ public:
 
 
 private:
-	void MoveForward(float Amount);   // принимает значени€ 1, 0, -1
-    void MoveRight(float Amount);     // принимает значени€ 1, 0, -1
-
-	bool WantsToRun = false;          // отслеживает нажата ли клавиша shift
-    bool IsMovingForward = false;     // отслеживает нажата ли клавиша вперед (W или стрелка вверх)
-	void OnStartRunning();            // вызываетс€ при нажатии Left Shift
-    void OnStopRunning();             // когда отпустли Left Shift
-
 	void OnHealthChanged(float Health, float HealthDelta); // функци€ вызываема€ делегатом при изменении здоровь€
 
 	UFUNCTION()

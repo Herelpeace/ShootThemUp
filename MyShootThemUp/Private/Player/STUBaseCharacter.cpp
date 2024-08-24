@@ -3,8 +3,7 @@
 
 
 #include "Player/STUBaseCharacter.h"
-#include "Camera/CameraComponent.h"                   // добавляем заголовочный файл камеры
-#include "GameFramework/SpringArmComponent.h"         // компонент вращения
+
 #include "Components/STUCharacterMovementComponent.h" // добавляем наш созданный STUCharacterMovementComponent
 #include "Components/STUHealthActorComponent.h"       // подключили наш компонент здоровья
 #include "Components/TextRenderComponent.h"           // отоброжение текста на экране, для здоровья
@@ -35,26 +34,8 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");    // вращение вокруг персонажа, создаем объект (штатив на котором находится камера)
-
-	// у SpringArmComponent в разделе Camera в разделе SocketOffset содержится положение
-	// камеры (Transform)
-	// данной настройкой мы смещаем камеру 0 - по Х, 100 - по Y, 80 по Z
-	SpringArmComponent->SocketOffset = FVector(200.0f, 800.0f, 800.0f);   
-	SpringArmComponent->SetupAttachment(GetRootComponent());                                   // закрепляем к корневому компоненту
-	SpringArmComponent->bUsePawnControlRotation = true;                                        // разрешает вращение мышкой, можно изменить в BP
-                     
-	
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");   // создаем камеру
-	CameraComponent->SetupAttachment(SpringArmComponent); // родительским указыаем SpringArmComponent
-
 	HealthComponent = CreateDefaultSubobject<USTUHealthActorComponent>("HealthComponent");   // создали объект в редакторе
 	                                                                                         // объект ни к чему не привязываем, он логический будет висеть в воздухе
-
-	HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent"); // создаем объект в редакторе, отображает здоровье
-	HealthTextComponent->SetupAttachment(GetRootComponent());                                  // закрепляем к корневому компоненту
-	HealthTextComponent->SetOwnerNoSee(true);                                                  // не отрисоываем данный компонет над персонажем когда мы им управляем
-
 	WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");   // создаем раздел в котором выбираем наши классы оружия
                                                                                  
 } 
@@ -64,7 +45,6 @@ void ASTUBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	check(HealthComponent) // проверка что объекты созданы и существуют
-	check(HealthTextComponent) // макросы работают только во время отладки, в shipinge они игнорируются
 	check(GetCharacterMovement()) // проверка что CharacterMovement не null
 	check(WeaponComponent)
 	check(GetMesh());
@@ -91,7 +71,7 @@ void ASTUBaseCharacter::BeginPlay()
 // выводим значение здоровья на экран в виде цифр
 void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta)
 {
-	HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT(" %.0f"), Health))); // выводим значение здоровья на экран в виде цифр
+	
 }
 
 
@@ -106,79 +86,18 @@ void ASTUBaseCharacter::Tick(float DeltaTime)
 }
 
 
-// Called to bind functionality to input
-void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	check(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &ASTUBaseCharacter::MoveForward);  // бинд клавиши движение вперед/назад
-	PlayerInputComponent->BindAxis("MoveRight", this, &ASTUBaseCharacter::MoveRight);      // бинд клавиши движение вплево/вправо
-
-	PlayerInputComponent->BindAxis("LookUp", this, &ASTUBaseCharacter::AddControllerPitchInput); // бинд мышки вверх/вниз
-	PlayerInputComponent->BindAxis("TurnAround", this, &ASTUBaseCharacter::AddControllerYawInput); // бинд мышки вокруг персонажа
-
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);           // прыжок
-	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::OnStartRunning);  // зажали shift
-	PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::OnStopRunning);  // отпустили shift
-
-	// Jump       - название биндинга
-	// IE_Pressed - состояние контрола, когда будет вызван CallBack
-	// this       - объект к которому применяем
-	// &ASTUBaseCharacter::Jump - функция которая будет вызвана при нажатии клавиши (уже реализована в классе Pawn)
-
-	PlayerInputComponent->BindAction("Fire",IE_Pressed,WeaponComponent, &USTUWeaponComponent::StartFire); // бинд функций стрельбы мышкой
-	PlayerInputComponent->BindAction("Fire",IE_Released,WeaponComponent, &USTUWeaponComponent::StopFire);
-	PlayerInputComponent->BindAction("NextWeapon", IE_Released, WeaponComponent, &USTUWeaponComponent::NextWeapon); // смена оружия
-	PlayerInputComponent->BindAction("Reload",IE_Pressed,WeaponComponent, &USTUWeaponComponent::Reload); // перезарядка
-}
-
-
-// MoveForward(float Amount) движение вперед/назад
-void ASTUBaseCharacter::MoveForward(float Amount) 
-{
-	if (Amount == 0.0f) return;
-	IsMovingForward = Amount > 0.0f; // если >0 значит нажата клавиша движения вперед
-	AddMovementInput(GetActorForwardVector(), Amount);
-
-	// GetActorForwardVector() - вектор, направление в котором движимся
-	// Amount                  - скорость движения. домножается на вектор
-}
-// MoveForward(float Amount) 
-
-// MoveRight(float Amount)  движение влево/вправо
-void ASTUBaseCharacter::MoveRight(float Amount) 
-{
-	if (Amount == 0.0f)   return;
-	AddMovementInput(GetActorRightVector(), Amount);
-}
-// MoveRight(float Amount) 
-
-// вызывается при нажатии Left Shift
-void ASTUBaseCharacter::OnStartRunning() 
-{
-	WantsToRun = true;
-}
-//OnStartRunning() 
-
-// когда отпустли Left Shift
-void ASTUBaseCharacter::OnStopRunning() 
-{
-	WantsToRun = false;
-}
-// OnStopRunning() 
-
 // возвращает true когда персонаж использует ускоренный бег
 bool ASTUBaseCharacter::IsRunning() const
 {
-	return WantsToRun&& IsMovingForward && !GetVelocity().IsZero();
+	return false;
 
 	//WantsToRun             - нажат shift
 	//IsMovingForward        - нажата клавиша вперед
 	//GetVelocity().IsZero() - вектор скорости персонажа не равен 0, он действительно двигается
 }
 // IsRunning()
+
+
 
 // поворот персонажа в градусах
 float ASTUBaseCharacter::GetMovementDirection() const
@@ -231,12 +150,6 @@ void ASTUBaseCharacter::OnDeath()
 
 	// уничтожение персонажа через 5 секунд
 	SetLifeSpan(LifeSpanDeth);  
-
-	if (Controller)  // проверка на null
-	{
-		// фцнкция для смены Pawna
-	    Controller->ChangeState(NAME_Spectating);
-	}
 
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	// GetCapsuleComponent()            - получаем указатель на CapsuleComponent

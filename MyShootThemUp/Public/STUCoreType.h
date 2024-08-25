@@ -150,3 +150,37 @@ struct FGameData
 	int32 RespawnTime = 5;
 
 };
+
+
+// состояния игры для GameMode, в основном используем для смены интерфейсов
+UENUM(BlueprintType)
+enum class ESTUMatchState :uint8
+{
+	WaitingToStart = 0,    // ожижание начала игры
+	InProgress,            // игра 
+	Pause,                 // пауза
+	GameOver               // конец игры
+};
+
+// декларируем делегат который будет оповещать всех об изменении состояния игры
+DECLARE_MULTICAST_DELEGATE_OneParam( FOnMatchStateChangedSignature, ESTUMatchState);
+// FOnMatchStateChangedSignature - имя делегата
+// ESDTUMatchState               - тип данных с которыми работает делегат
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

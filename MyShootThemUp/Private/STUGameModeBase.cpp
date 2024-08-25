@@ -41,6 +41,10 @@ void ASTUGameModeBase::StartPlay()
 
     // запускаем раунд
     StartRound();
+
+    // меняем состояние игры 
+    SetMatchState(ESTUMatchState::InProgress);
+
 }
 
 
@@ -288,14 +292,12 @@ void ASTUGameModeBase::StartRespawn(AController* Controller)
 
 }
 
-
 // делвем респавн персонажа не дожидаяясь окончания раунда
 void ASTUGameModeBase::RespawnRequest(AController* Controller)
 {
     ResetOnePlayer(Controller);
     
 }
-
 
 // вызывается когда все раунды окончены
 void ASTUGameModeBase::GameOver()
@@ -317,5 +319,20 @@ void ASTUGameModeBase::GameOver()
         }
 
     }
+
+    // меняем состояние игры 
+    SetMatchState(ESTUMatchState::GameOver);
 }
 
+// устанавливает MatchState, и вызывает Broadcast делегата состояния игры OnMatchStateChanged
+void ASTUGameModeBase::SetMatchState(ESTUMatchState State)
+{
+    // если текущее состояние игры равно новому состоянию, выходим
+    if (MatchState == State) return;
+
+    MatchState = State;
+
+    // оповещаем всех что состояние игры изменилось 
+    OnMatchStateChanged.Broadcast(MatchState);
+
+}

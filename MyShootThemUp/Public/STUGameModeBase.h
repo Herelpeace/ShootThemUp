@@ -20,6 +20,9 @@ class MYSHOOTTHEMUP_API ASTUGameModeBase : public AGameModeBase
 public:
     ASTUGameModeBase();
 
+    // создаем экземпл€р делегата состо€ний игры 
+    FOnMatchStateChangedSignature OnMatchStateChanged;
+
     // внутренн€€ функци€ GameMode, запускаетс€ до BeginPlay GameMode и акторов
     // инициализируем настроки, вызываем функцию спавна игроков
     virtual void StartPlay() override;
@@ -52,6 +55,8 @@ protected:
     FGameData GameData;                                 // наша структура с натройками GameMode
 
 private:
+    ESTUMatchState MatchState = ESTUMatchState::WaitingToStart;  // текущее состо€ние игры
+
     int32 CurrentRound = 1;             // текущий раунд
     int32 RoundCoundDown = 0;           // врем€ до конца раунда
     FTimerHandle GameRoundTimerHandle;  // дискриптор таймера который будет отсчитывать врем€ в раунде
@@ -89,4 +94,8 @@ private:
 
     // вызываетс€ когда все раунды окончены
     void GameOver();
+
+    // устанавливает MatchState, и вызывает Broadcast делегата состо€ни€ игры OnMatchStateChanged
+    void SetMatchState(ESTUMatchState State);
+
 };

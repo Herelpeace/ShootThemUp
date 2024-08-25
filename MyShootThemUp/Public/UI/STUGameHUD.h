@@ -1,10 +1,11 @@
 // My Shoot Them Up Game , All Rights Reserved
-// В STUGameModeBase.h
+// В STUGameHUD.h
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "STUCoreType.h"
 #include "STUGameHUD.generated.h"
 
 /**
@@ -27,7 +28,11 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	private:
-	// в данной фнункции находится логика отрисовки
+private:
+	// в данной функции находится логика отрисовки
 	void DrawCrossHair();	
+
+	// Callback функция, которую подписываем на делегат изменения состояния игры в BeginPlay
+	void OnMatchStateChanged(ESTUMatchState State);
+
 };

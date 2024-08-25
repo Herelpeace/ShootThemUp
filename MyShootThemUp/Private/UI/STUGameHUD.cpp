@@ -1,11 +1,14 @@
 // My Shoot Them Up Game , All Rights Reserved
-// В STUGameModeBase.cpp
+// В STUGameHUD.cpp
 
 
 
 #include "UI/STUGameHUD.h"
 #include "Engine/Canvas.h"        // для получения размеров экрана, в нем происходит отрисовка 
 #include "Blueprint/UserWidget.h" // заголовочный файл виджетов
+#include "STUGameModeBase.h"      // заголовочный файл нашего GameMode
+
+DEFINE_LOG_CATEGORY_STATIC(LogSTUGameHUD, All, All);
 
 void ASTUGameHUD::DrawHUD() 
 {
@@ -14,7 +17,6 @@ void ASTUGameHUD::DrawHUD()
 
     // функция в которой находится логика отрисовки
    // DrawCrossHair(); 
-
 }
 
 
@@ -33,6 +35,25 @@ void ASTUGameHUD::BeginPlay()
         PlayerHUDWidget->AddToViewport();
         // AddToViewport() - функция отрисовки, вызывается у виджета. Может принимать уровень/слой отрисовки
     }
+
+    if (GetWorld())
+    {
+        // получаем текущий GameMode
+        const auto GameMode = Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode());
+
+        if (GameMode)
+        {
+            // подписываемся на делегат состояния игры OnMatchStateChanged
+            GameMode->OnMatchStateChanged.AddUObject(this, &ASTUGameHUD::OnMatchStateChanged);
+            // будет вызываться функция OnMatchStateChanged
+        }
+    }
+}
+
+// Callback функция, которую подписываем на делегат изменения состояния игры в BeginPlay
+void ASTUGameHUD::OnMatchStateChanged(ESTUMatchState State)
+{
+    UE_LOG(LogSTUGameHUD,Warning, TEXT("Match state changed: %s "), *UEnum::GetValueAsString(State) );
 }
 
 

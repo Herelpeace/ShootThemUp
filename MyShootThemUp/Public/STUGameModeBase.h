@@ -44,6 +44,13 @@ public:
     // делвем респавн персонажа не дожида€€сь окончани€ раунда
     void RespawnRequest(AController* Controller);
 
+    // переопредел€ем функцию паузы GameMode
+    virtual bool SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate = FCanUnpause()) override;
+
+    // функци€ сн€ти€ паузы 
+    virtual bool ClearPause() override;
+
+
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Game")
     TSubclassOf <AAIController> AIControllerClass;      // переменна€ AIControllera 

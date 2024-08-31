@@ -8,9 +8,7 @@
 #include "STUCoreType.h"
 #include "STUGameHUD.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class MYSHOOTTHEMUP_API ASTUGameHUD : public AHUD
 {
@@ -25,10 +23,21 @@ protected:
 	TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
 	// PlayerHUDWidgetClass - переменная типа UUserWidget, всех виджетов
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget>  PauseWidgetClass; 
 
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY()
+	TMap<ESTUMatchState, UUserWidget*> GameWidgets;
+	// TMap           - ассоциотивный массив, в нем храним все виджеты
+	// ESTUMatchState - тип ключа (enum)
+	// UUserWidget    - тип значения (widget)
+
+	UPROPERTY()
+		UUserWidget* CurrentWidget = nullptr;  // хранит указатель на текущий виджет
+
 	// в данной функции находится логика отрисовки
 	void DrawCrossHair();	
 

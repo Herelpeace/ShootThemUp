@@ -23,18 +23,24 @@ void ASTUGameHUD::DrawHUD()
 void ASTUGameHUD::BeginPlay()
 {
     Super::BeginPlay();
+    
+    // заполняем ассоциотивный массив одновременно создавая виджеты
+    GameWidgets.Add(ESTUMatchState::InProgress, CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass));
+    GameWidgets.Add(ESTUMatchState::Pause,      CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass));
 
-    auto PlayerHUDWidget = CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass);
-    // CreateWidget <>()    - шаблонная функция создания виджета
-    // UUserWidget          - тип виджета, базовый класс виджетов
-    // GetWorld()           - указатель на объект владельца, можно так же передать this
-    // PlayerHUDWidgetClass - класс виджета который хотим создать, по сути переменная в которуб записываем виджет
-
-    if (PlayerHUDWidget)
+    // пробегаем по ассоциотивному массиву, добавляем виджеты во вьюпорт, отключаем их видимость
+    for (auto GameWidgetPair : GameWidgets)
     {
-        PlayerHUDWidget->AddToViewport();
-        // AddToViewport() - функция отрисовки, вызывается у виджета. Может принимать уровень/слой отрисовки
+        // получаем сырое значение виджета
+        const auto GameWidget = GameWidgetPair.Value;
+        if (!GameWidget) continue;
+        // выводим виджет во вьюпорт
+        GameWidget->AddToViewport();
+
+        // делаем невидимым
+        GameWidget->SetVisibility(ESlateVisibility::Hidden);
     }
+
 
     if (GetWorld())
     {
@@ -50,9 +56,31 @@ void ASTUGameHUD::BeginPlay()
     }
 }
 
-// Callback функция, которую подписываем на делегат изменения состояния игры в BeginPlay
+// Callback функция, которую подписываем на делегат изменения состояния игры в BeginPlay, OnMatchStateChanged
+// вызывается каждый раз когда меняется состояние игры 
 void ASTUGameHUD::OnMatchStateChanged(ESTUMatchState State)
 {
+    // делаем невидимым текущий виджет
+    // первый раз функция не вызывается потому что CurrentWidget = null
+    if (CurrentWidget)
+    {
+        CurrentWidget->SetVisibility(ESlateVisibility::Hidden);
+    }
+
+    // проверяем есть ли в ассоциотивном массиве ключ на данное состояние игры 
+    // если есть, текущему виджету присваем значение в соответствии с текущим состоянием игры 
+    if (GameWidgets.Contains(State))
+    {
+        CurrentWidget = GameWidgets[State];
+    }
+
+    // включаем видимость виджета 
+    if (CurrentWidget)
+    {
+        CurrentWidget->SetVisibility(ESlateVisibility::Visible);
+    }
+
+
     UE_LOG(LogSTUGameHUD,Warning, TEXT("Match state changed: %s "), *UEnum::GetValueAsString(State) );
 }
 

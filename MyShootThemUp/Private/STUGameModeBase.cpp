@@ -336,3 +336,39 @@ void ASTUGameModeBase::SetMatchState(ESTUMatchState State)
     OnMatchStateChanged.Broadcast(MatchState);
 
 }
+
+// переопределяем функцию паузы GameMode
+bool ASTUGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate)
+{
+    // получаем состояние родительской функции, true - установилась пауза
+    const auto PauseSet = Super::SetPause(PC, CanUnpauseDelegate);
+
+    if (PauseSet)
+    {
+        // меняем состояние игры 
+        SetMatchState(ESTUMatchState::Pause);
+    }
+
+    return  PauseSet;
+}
+
+
+// функция снятия паузы 
+bool ASTUGameModeBase::ClearPause()
+{
+    // сохраняем значение родительской функции 
+    const auto PauseCleared = Super::ClearPause();
+
+    if (PauseCleared)
+    {
+        // меняем состояние игры 
+        SetMatchState(ESTUMatchState::InProgress);
+    }
+
+    return PauseCleared;
+}
+
+
+
+
+

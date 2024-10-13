@@ -34,4 +34,7 @@ public:
 		return PlayerState1 && PlayerState2 && PlayerState1->GetTeamID() != PlayerState2->GetTeamID();
 	}
 
+	// функция преобразует int32 в Text (из int32 получаем String а из него Text)
+	static FText TextFromInt(int32 Number) { return FText::FromString(FString::FromInt(Number)); }
+
 };

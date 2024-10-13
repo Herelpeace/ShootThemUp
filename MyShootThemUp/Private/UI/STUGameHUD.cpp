@@ -27,6 +27,7 @@ void ASTUGameHUD::BeginPlay()
     // заполняем ассоциотивный массив одновременно создавая виджеты
     GameWidgets.Add(ESTUMatchState::InProgress, CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass));
     GameWidgets.Add(ESTUMatchState::Pause,      CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass));
+    GameWidgets.Add(ESTUMatchState::GameOver,   CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetClass));
 
     // пробегаем по ассоциотивному массиву, добавляем виджеты во вьюпорт, отключаем их видимость
     for (auto GameWidgetPair : GameWidgets)
@@ -74,7 +75,7 @@ void ASTUGameHUD::OnMatchStateChanged(ESTUMatchState State)
         CurrentWidget = GameWidgets[State];
     }
 
-    // включаем видимость виджета 
+    // включаем видимость уже нового виджета, который стал текущим 
     if (CurrentWidget)
     {
         CurrentWidget->SetVisibility(ESlateVisibility::Visible);

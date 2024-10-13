@@ -1,5 +1,6 @@
 // My Shoot Them Up Game , All Rights Reserved
 // В STUGameHUD.h
+// Содержит виджеты состояний игры, Player, Pause, Game Over
 
 #pragma once
 
@@ -19,12 +20,18 @@ class MYSHOOTTHEMUP_API ASTUGameHUD : public AHUD
 	virtual void DrawHUD() override;
 
 protected:
+	// виджет игры
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
 	// PlayerHUDWidgetClass - переменная типа UUserWidget, всех виджетов
 
+	// виджет паузы
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget>  PauseWidgetClass; 
+
+	// виджет Game Over
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> GameOverWidgetClass;
 
 	virtual void BeginPlay() override;
 
@@ -38,7 +45,7 @@ private:
 	UPROPERTY()
 		UUserWidget* CurrentWidget = nullptr;  // хранит указатель на текущий виджет
 
-	// в данной функции находится логика отрисовки
+	// в данной функции находится логика отрисовки прицела
 	void DrawCrossHair();	
 
 	// Callback функция, которую подписываем на делегат изменения состояния игры в BeginPlay
